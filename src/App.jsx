@@ -26,7 +26,7 @@ function App() {
 
         <div className="flex flex-col items-center justify-center gap-3 mt-6 lg:mt-0">
           <button
-            className="py-2 text-white px-7 rounded-3xl headerFont"
+            className="w-80 h-14 py-2 text-white text-sm px-7 rounded-full headerFont"
             style={{
               background:
                 "linear-gradient(270deg, #98D8C8 -0.1%, #1F3A2B 100.1%)",

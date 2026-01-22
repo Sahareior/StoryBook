@@ -56,7 +56,8 @@
 .slider-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* This is key - maintains aspect ratio while filling container */
+  object-fit: contain; /* show full image without cropping */
+  object-position: center;
   display: block;
   box-shadow: 3px 3px 40px 0px #203B2C66;
 

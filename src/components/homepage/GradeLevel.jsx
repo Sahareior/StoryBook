@@ -23,8 +23,11 @@ import { GiTreeBranch } from 'react-icons/gi';
 const Card = ({ data }) => {
 
   return (
-    <div className="flex border-b-2 w-full border-x-2 p-4 my-4 md:my-7 px-4 md:px-8 rounded-xl shadow-md flex-col justify-center items-center gap-3">
-     <img src={data?.img} alt="" />
+    <div
+      className="flex w-56 h-52 hover:border-2 hover:border-[#FFD700] p-4 my-4 md:my-7 px-4 md:px-8 rounded-3xl flex-col justify-center items-center gap-3"
+      style={{ boxShadow: '0px 4px 6px -4px #0000001A, 0px 10px 15px -3px #0000001A' }}
+    >
+      <img src={data?.img} alt="" />
       <h2 className="text-xl md:text-xl font-semibold text-center headerFont">{data?.title}</h2>
       <p className="text-sm md:text-[16px] text-center normalFont">{data?.subTitle}</p>
     </div>
@@ -39,7 +42,7 @@ const GradeLevel = () => {
       </p>
       <p className='normalFont text-center text-base md:text-[20px] mt-1 text-[#4A5565] px-4'>Pick your grade to see stories just right for you!</p>
 
-      <div className="flex flex-col md:flex-row items-center justify-center px-4 md:px-12 lg:px-24 mt-8 md:mt-16 gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-center px-4 md:px-12 lg:px-24 mt-8 gap-6">
         {cardData.map((item) => (
           <Card key={item.title} data={item} />
         ))}
