@@ -10,9 +10,16 @@ export const authApi = api.injectEndpoints({
         body: data,
       }),
     }),
-  }),
+    // === SITE OVERVIEW ===
+    getSiteOverview: builder.query({
+      query: () => ({
+        url: "/site/overview/",
+        method: "GET",
+      }),
+    }),
+    }),
 });
-
 export const {
   useLoginMutation,
+  useGetSiteOverviewQuery,
 } = authApi;

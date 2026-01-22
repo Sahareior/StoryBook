@@ -2,118 +2,49 @@ import React from "react";
 import { Users, BookOpen, Search } from "lucide-react";
 import StatsCard from "../TeacherPannel/TeacherDash/StatsCard";
 import RecentActivity from "../TeacherPannel/TeacherDash/RecentActivity";
+import { useGetSiteOverviewQuery } from "../../../redux/api/authApi";
 
 export default function AdminDashboard() {
-  // ---------------- Fake Data ----------------
+  // Fetch site overview from API
+  const { data, isLoading, error } = useGetSiteOverviewQuery();
+
+  // Map API response into stats and activity shapes used by the UI
   const statsData = [
     {
       title: "Total Students",
-      value: 8,
-      subtitle: "12 active this week",
+      value: data?.total_students ?? "-",
+      subtitle: `${data?.total_students ?? "-"} registered`,
       icon: Users,
     },
     {
       title: "Total Story",
-      value: 416,
-      subtitle: "Avg 52 per student",
+      value: data?.total_stories ?? "-",
+      subtitle: `Stories across platform`,
       icon: BookOpen,
     },
     {
-      title: "Dictionary Average",
-      value: 26,
-      subtitle: "Average per student",
+      title: "Top Searched",
+      value: data?.top_searched_words?.[0]?.count ?? "-",
+      subtitle: data?.top_searched_words?.[0]?.word ?? "-",
       icon: BookOpen,
     },
     {
-      title: "Vocabulary Search",
-      value: 118,
-      subtitle: "New words this week",
+      title: "Second Searched",
+      value: data?.top_searched_words?.[1]?.count ?? "-",
+      subtitle: data?.top_searched_words?.[1]?.word ?? "-",
       icon: Search,
     },
   ];
 
-  const activityData = [
-    {
-      id: 1,
-      name: "Ethan Davis",
-      lastActive: "5 min ago",
-      dict: 25,
-      stories: 12,
+  const activityData =
+    data?.recent_students_activity?.map((item, idx) => ({
+      id: idx + 1,
+      name: item.description,
+      lastActive: item.time_ago,
+      dict: 0,
+      stories: 0,
       image: "",
-    },
-    {
-      id: 2,
-      name: "Olivia Smith",
-      lastActive: "12 min ago",
-      dict: 30,
-      stories: 15,
-      image: "",
-    },
-    {
-      id: 3,
-      name: "Liam Johnson",
-      lastActive: "20 min ago",
-      dict: 22,
-      stories: 18,
-      image: "",
-    },
-    {
-      id: 4,
-      name: "Sophia Brown",
-      lastActive: "25 min ago",
-      dict: 28,
-      stories: 20,
-      image: "",
-    },
-    {
-      id: 5,
-      name: "Noah Wilson",
-      lastActive: "30 min ago",
-      dict: 18,
-      stories: 14,
-      image: "",
-    },
-    {
-      id: 6,
-      name: "Ava Martinez",
-      lastActive: "35 min ago",
-      dict: 32,
-      stories: 21,
-      image: "",
-    },
-    {
-      id: 7,
-      name: "James Anderson",
-      lastActive: "40 min ago",
-      dict: 27,
-      stories: 17,
-      image: "",
-    },
-    {
-      id: 8,
-      name: "Isabella Thomas",
-      lastActive: "45 min ago",
-      dict: 24,
-      stories: 19,
-      image: "",
-    },
-    {
-      id: 9,
-      name: "Lucas Taylor",
-      lastActive: "50 min ago",
-      dict: 29,
-      stories: 16,
-      image: "",
-    },
-    {
-      id: 10,
-      name: "Mia Moore",
-      lastActive: "55 min ago",
-      dict: 26,
-      stories: 13,
-      image: "",
-    },
-  ];
+    })) || [];
 
   // ---------------- Render ----------------
   return (
@@ -123,15 +54,23 @@ export default function AdminDashboard() {
         Welcome back! Here's what's happening with your students.
       </p>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 mt-6 sm:grid-cols-2 lg:grid-cols-4">
-        {statsData.map((item, idx) => (
-          <StatsCard key={idx} id={idx} {...item} />
-        ))}
-      </div>
+      {isLoading ? (
+        <p className="mt-6">Loading overview...</p>
+      ) : error ? (
+        <p className="mt-6 text-red-500">Failed to load overview.</p>
+      ) : (
+        <>
+          {/* Stats */}
+          <div className="grid grid-cols-1 gap-4 mt-6 sm:grid-cols-2 lg:grid-cols-4">
+            {statsData.map((item, idx) => (
+              <StatsCard key={idx} id={idx} {...item} />
+            ))}
+          </div>
 
-      {/* Recent Activity */}
-      <RecentActivity activity={activityData} />
+          {/* Recent Activity */}
+          <RecentActivity activity={activityData} />
+        </>
+      )}
     </div>
   );
 }

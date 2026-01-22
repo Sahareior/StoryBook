@@ -4,13 +4,16 @@ import { LuUserRoundPlus } from "react-icons/lu";
 import { FaUsers } from "react-icons/fa";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { FiSettings } from "react-icons/fi";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { persistor } from "../../../redux/stores/store";
+import { logout } from "../../../redux/features/authSlice";
 import { BookOpen, MessageSquare } from "lucide-react";
 
 const AdminSidebar = ({ collapsed }) => {
   const navigate = useNavigate();
-  //   const dispatch = useDispatch();
-  //   const location = useLocation();
+  const dispatch = useDispatch();
+  const location = useLocation();
 
   const isActiveDashboard = location.pathname.startsWith("/dashboard/admin");
   const isActiveUsers = location.pathname.startsWith("/dashboard/user");
@@ -19,8 +22,24 @@ const AdminSidebar = ({ collapsed }) => {
   const isActiveSettings = location.pathname.startsWith("/dashboard/settings");
 
   const handleLogOut = () => {
-    // dispatch(userLoggedOut());
-    // persistor.purge();
+    try {
+      dispatch(logout());
+    } catch (e) {
+      // ignore
+    }
+    try {
+      persistor.purge();
+    } catch (e) {
+      // ignore
+    }
+    // Clear common auth keys from localStorage as well
+    try {
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      localStorage.removeItem("persist:root");
+    } catch (e) {}
     navigate("/login", { replace: true });
   };
 
