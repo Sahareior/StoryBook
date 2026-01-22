@@ -5,10 +5,22 @@ import { GoPeople, GoTrophy } from "react-icons/go";
 import { IoBookOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
 
-const DuelCard = ({ data }) => {
+const DuelCard = ({ data, onClick }) => {
+  const handleKeyDown = (e) => {
+    if (!onClick) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <div
-      className="flex flex-col sm:flex-row w-full xl:w-[40vw] border-4 rounded-2xl p-5 lg:p-8 gap-4"
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      className="flex flex-col sm:flex-row w-full xl:w-[40vw] border-4 rounded-2xl p-5 lg:p-8 gap-4 cursor-pointer focus:outline-none hover:shadow-2xl transition-transform transform hover:-translate-y-1"
       style={{
         background: data.backgroundColor,
         borderColor: `${data.borderColor}40`, // Adding alpha (40 = 25% opacity)
@@ -23,7 +35,7 @@ const DuelCard = ({ data }) => {
         {data.icon}
       </p>
       <div className="space-y-2">
-        <h2 className="text-lg lg:text-xl text-[#1E2939] font-semibold headerFont">
+        <h2 className="text-xs lg:text-xl text-[#1E2939] font-semibold headerFont">
           {data.text1}
         </h2>
         <p className="text-[#4A5565] text-base lg:text-[18px] px-1 normalFont">
@@ -65,7 +77,7 @@ const AchievementCard = () => {
       borderColor: "#FFBF00",
       iconBgColor: "linear-gradient(180deg, #FFE87C 0%, #FFD700 100%)",
       backgroundColor: "linear-gradient(180deg, #FFF8E6 0%, #FFF0F5 100%)",
-      text1: "Write & Create",
+      text1: "Create Your Own Stories",
       text2:
         "Express yourself with our creative writing tools and share your stories with a safe community of young writers!",
       nestedText: [
@@ -100,10 +112,17 @@ const AchievementCard = () => {
   ];
 
   return (
-    <div className="bg-[#fff7ec] space-y-12 lg:space-y-24 py-8 lg:py-16 px-4 lg:px-0">
-      <div className="flex flex-col xl:flex-row gap-6 lg:gap-16 justify-center items-center lg:px-20">
+    <div className="bg-[#fff7ec] space-y-12 lg:space-y-24 pb-8 lg:py-16 px-4 lg:px-0">
+      <div className="max-w-[1440px] mx-auto flex flex-col xl:flex-row gap-6 lg:gap-16 justify-center items-center lg:px-20">
         {cardData.map((data, index) => (
-          <DuelCard key={index} data={data} />
+          <DuelCard
+            key={index}
+            data={data}
+            onClick={() => {
+              if (index === 0) navigate('/library');
+              if (index === 1) navigate('/story-creator');
+            }}
+          />
         ))}
       </div>
 

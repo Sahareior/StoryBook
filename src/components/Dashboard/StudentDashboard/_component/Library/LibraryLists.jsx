@@ -2,7 +2,7 @@ import { Pagination } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { IoArrowBack, IoBookOutline, IoSearch } from "react-icons/io5";
-import { Link, useNavigate } from "react-router";
+import { Link, ScrollRestoration, useNavigate } from "react-router";
 
 const recommendedStories = [
   {
@@ -152,6 +152,7 @@ const LibraryLists = () => {
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-[#FFF6EA] to-[#FFFDF9]">
+      <ScrollRestoration />
       <div className="w-[80vw] mx-auto py-20 space-y-10">
         {/* Header */}
         <header className="flex items-center gap-6">

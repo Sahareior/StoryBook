@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, ScrollRestoration } from "react-router-dom";
 import EmojiPicker from "emoji-picker-react";
 import {
   ArrowLeft,
@@ -176,6 +176,7 @@ export default function StoryCreatorStudio() {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#FFF0F5] to-white p-4 md:p-8 lg:p-20">
+      <ScrollRestoration />
       {/* Header */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4 lg:gap-0">
         <div className="flex items-center gap-2">
