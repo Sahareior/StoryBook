@@ -3,40 +3,45 @@ import { BookOpen, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import bgImg from "../../assets/bg.png";
+import { useLoginMutation } from "../../redux/api/authApi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [login, { isLoading }] = useLoginMutation();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Teacher Login
-    if (email === "teacher@gmail.com" && password === "teacher@gmail.com") {
-      localStorage.setItem("role", "TEACHER");
-      toast.success("Teacher login successful");
-      navigate("/dashboard/teacher");
-      return;
-    }
+    try {
+      const response = await login({ email, password }).unwrap();
 
-    // ✅ Admin Login
-    if (email === "admin@gmail.com" && password === "admin@gmail.com") {
-      localStorage.setItem("role", "ADMIN");
-      toast.success("Admin login successful");
-      navigate("/dashboard/admin");
-      return;
-    }
-    if (email === "student@gmail.com" && password === "student@gmail.com") {
-      localStorage.setItem("role", "student");
-      toast.success("Student login successful");
-      navigate("/student-dashboard");
-      return;
-    }
+      // Store response data
+      localStorage.setItem("access", response.access);
+      localStorage.setItem("refresh", response.refresh);
+      localStorage.setItem("user", JSON.stringify(response.user));
 
-    // ❌ Invalid credentials
-    toast.error("Invalid email or password");
+      toast.success("Login successful");
+
+      // Navigate based on user role
+      if (response.user.is_admin_user) {
+        localStorage.setItem("role", "ADMIN");
+        navigate("/dashboard/admin");
+      } else if (response.user.is_teacher) {
+        localStorage.setItem("role", "TEACHER");
+        navigate("/dashboard/teacher");
+      } else if (response.user.is_student) {
+        localStorage.setItem("role", "student");
+        navigate("/student-dashboard");
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+      toast.error(
+        err?.data?.detail || err?.data?.message || "Invalid email or password",
+      );
+    }
   };
 
   return (
@@ -46,7 +51,7 @@ const Login = () => {
         src={bgImg}
         alt="Background"
         className="fixed inset-0 w-full h-full object-cover z-0"
-        style={{ pointerEvents: 'none', userSelect: 'none' }}
+        style={{ pointerEvents: "none", userSelect: "none" }}
       />
       {/* Overlay for opacity-50 */}
       <div className="fixed inset-0 bg-black opacity-50 z-10" />
@@ -103,7 +108,11 @@ const Login = () => {
                   onClick={() => setShowPassword((prev) => !prev)}
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff color="#99A1AF" /> : <Eye color="#99A1AF" />}
+                  {showPassword ? (
+                    <EyeOff color="#99A1AF" />
+                  ) : (
+                    <Eye color="#99A1AF" />
+                  )}
                 </button>
               </div>
 
@@ -115,15 +124,19 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-base md:text-lg py-3 md:py-4 rounded-2xl shadow-lg headerFont"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-base md:text-lg py-3 md:py-4 rounded-2xl shadow-lg headerFont disabled:opacity-50"
               >
-                Log in
+                {isLoading ? "Logging in..." : "Log in"}
               </button>
             </form>
 
             <p className="mt-6 text-center text-gray-600 text-sm md:text-base normalFont">
               Are you a parent or teacher?{" "}
-              <a href="/login" className="text-[#87CEEB] hover:underline normalFont">
+              <a
+                href="/login"
+                className="text-[#87CEEB] hover:underline normalFont"
+              >
                 Click here
               </a>
             </p>
