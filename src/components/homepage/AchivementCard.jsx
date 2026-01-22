@@ -158,7 +158,7 @@ const AchievementCard = () => {
 
         <button
           onClick={() => navigate("/signup")}
-          className="text-lg lg:text-[20px] px-10 lg:px-20 text-white py-3 rounded-3xl headerFont"
+          className="text-lg px-10 lg:px-5 text-white py-3 rounded-full headerFont"
           style={{
             background:
               "linear-gradient(270deg, #98D8C8 -0.1%, #1F3A2B 100.1%)",
