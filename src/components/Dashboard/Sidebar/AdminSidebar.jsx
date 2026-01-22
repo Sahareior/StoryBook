@@ -25,12 +25,12 @@ const AdminSidebar = ({ collapsed }) => {
     try {
       dispatch(logout());
     } catch (e) {
-      // ignore
+      console.log(e)
     }
     try {
       persistor.purge();
     } catch (e) {
-      // ignore
+      console.log(e)
     }
     // Clear common auth keys from localStorage as well
     try {
@@ -39,7 +39,9 @@ const AdminSidebar = ({ collapsed }) => {
       localStorage.removeItem("user");
       localStorage.removeItem("role");
       localStorage.removeItem("persist:root");
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
     navigate("/login", { replace: true });
   };
 

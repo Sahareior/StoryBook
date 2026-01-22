@@ -10,6 +10,7 @@ const getUserFromStorage = () => {
     // Otherwise, try to parse it.
     return JSON.parse(userJson);
   } catch (e) {
+    console.log(e)
     // If parsing fails, return null.
     return null;
   }

@@ -1,52 +1,16 @@
 import { Check, Eye, Pencil, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EditUserModal from "./EditUserModal";
+import { useGetSiteAdminStudentsOverviewQuery } from '../../../../redux/api/authApi';
 
-const initialData = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    email: "sarah@example.com",
-    avatar: "S",
-    grade: 4,
-    vocabulary: "Intermediate",
-    dictionary: 12,
-    story: 10,
-    readingLevel: "3/5",
-    decision: null,
-  },
-  {
-    id: 2,
-    name: "Mike Chen",
-    email: "mike@example.com",
-    avatar: "M",
-    grade: 4,
-    vocabulary: "Advanced",
-    dictionary: 12,
-    story: 10,
-    readingLevel: "3/5",
-    decision: "approved",
-  },
-  {
-    id: 3,
-    name: "Emma Williams",
-    email: "emma@example.com",
-    avatar: "E",
-    grade: 4,
-    vocabulary: "Beginner",
-    dictionary: 12,
-    story: 10,
-    readingLevel: "3/5",
-    decision: null,
-  },
-];
 
 export default function StudentsTable({
   searchQuery = "",
   selectedGrade = "all",
 }) {
-  const [data, setData] = useState(initialData);
+  const { data: apiStudents, isLoading, error } = useGetSiteAdminStudentsOverviewQuery();
+  const [data, setData] = useState([]);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -56,6 +20,40 @@ export default function StudentsTable({
       prev.map((item) => (item.id === id ? { ...item, decision: value } : item))
     );
   };
+
+  useEffect(() => {
+    if (!apiStudents) return;
+    // Map API response shape to the table row shape
+    const mapped = apiStudents.map((s) => {
+      const name = (s.first_name || s.last_name)
+        ? `${s.first_name} ${s.last_name}`.trim()
+        : s.email.split("@")[0];
+      const vocab = s.vocabulary_proficiency
+        ? s.vocabulary_proficiency.charAt(0).toUpperCase() + s.vocabulary_proficiency.slice(1)
+        : "-";
+      const readingLevel =
+        s.vocabulary_proficiency === "advanced"
+          ? "5/5"
+          : s.vocabulary_proficiency === "intermediate"
+          ? "3/5"
+          : s.vocabulary_proficiency === "beginner"
+          ? "1/5"
+          : "-";
+      return {
+        id: s.id,
+        name,
+        email: s.email,
+        avatar: name.charAt(0).toUpperCase(),
+        grade: s.grade_level,
+        vocabulary: vocab,
+        dictionary: 0,
+        story: 0,
+        readingLevel,
+        decision: null,
+      };
+    });
+    setData(mapped);
+  }, [apiStudents]);
 
   const filteredData = data.filter((item) => {
     const matchesSearch = item.name
