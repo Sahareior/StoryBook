@@ -23,7 +23,7 @@ const ForgotPassword = () => {
       {/* Overlay for opacity-50 */}
       <div className="fixed inset-0 bg-black opacity-50 z-10" />
       <div className="py-8 px-4 md:py-20 md:px-24 flex items-center justify-center gap-10 relative z-20 min-h-screen">
-        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl h-auto md:h-[906px] overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[524px] h-auto  overflow-hidden">
           {/* Back Button */}
           <button
             type="button"
@@ -42,7 +42,7 @@ const ForgotPassword = () => {
               </div>
               {/* Title */}
               <h1 className="text-base md:text-2xl font-bold text-[#1E2939] text-center headerFont">
-                Forgot Password? 🤔
+                Forgot Password?
               </h1>
 
               {/* Subtitle */}
@@ -80,7 +80,7 @@ const ForgotPassword = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-base md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg"
+                className="w-full pb-16 headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-base md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg"
               >
                 Send
               </button>

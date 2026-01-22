@@ -65,7 +65,7 @@ const Login = () => {
               </div>
 
               <h1 className="text-2xl sm:text-3xl md:text-2xl font-bold text-[#1E2939] text-center headerFont">
-                Welcome Back! 👋
+                Welcome Back!
               </h1>
 
               <p className="text-[#4A5565] text-base md:text-lg text-center normalFont">
