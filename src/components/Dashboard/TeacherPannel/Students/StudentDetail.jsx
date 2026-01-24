@@ -7,7 +7,7 @@ import StorySelectModal from "./StorySelectModal";
 import { IoClose } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { useGetSiteAdminStudentDetailQuery } from "../../../../redux/api/authApi";
+import { useGetStudentDetailQuery } from "../../../../redux/api/authApi";
 const fakeStudent = {
   name: "Sarah Johnson",
   lastActive: "30min ago",
@@ -47,11 +47,7 @@ export default function StudentDetail() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
   const { id } = useParams();
-  const {
-    data: student,
-    isLoading,
-    error,
-  } = useGetSiteAdminStudentDetailQuery(id);
+  const { data: student, isLoading, error } = useGetStudentDetailQuery(id);
   const navigate = useNavigate();
   // Star Rating Component
   const StarRating = ({ rating = 3, maxStars = 5 }) => {

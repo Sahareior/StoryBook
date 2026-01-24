@@ -25,7 +25,7 @@ export default function StudentManagementTable() {
 
   const handleView = (id) => {
     console.log("Viewing student:", id);
-    navigate(`/dashboard/students/details`);
+    navigate(`/dashboard/students/details/${id}`);
   };
 
   const handleEdit = (user) => {

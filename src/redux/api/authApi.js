@@ -159,7 +159,14 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Students"],
     }),
-    
+    // === Student Detail ===
+    getStudentDetail: builder.query({
+      query: (id) => ({
+        url: `/teachers/students/${id}/action/`,
+        method: "GET",
+      }),
+      providesTags: ["Student Detail"],
+    }),
   }),
 });
 export const {
@@ -182,4 +189,5 @@ export const {
   useGetTeacherDashboardQuery,
   useGetAllStudentsListQuery,
   useAddStudentMutation,
+  useGetStudentDetailQuery,
 } = authApi;
