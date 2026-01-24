@@ -1,36 +1,55 @@
 import React, { useState } from "react";
 
-const ActivityRow = ({ name, lastActive, dict, stories, image }) => {
-  const firstLetter = name ? name.charAt(0).toUpperCase() : "?";
+const ActivityRow = ({
+  student_name,
+  student_username,
+  action_type,
+  description,
+  time_ago,
+}) => {
+  const displayName = student_name || student_username || "Unknown";
+  const firstLetter = displayName.charAt(0).toUpperCase();
+
+  // Helper to color action types
+  const getActionColor = (type) => {
+    switch (type) {
+      case "STORY_CREATE":
+        return "text-emerald-600 bg-emerald-50";
+      case "STORY_UPDATE":
+        return "text-blue-600 bg-blue-50";
+      case "READ_COMPLETE":
+        return "text-purple-600 bg-purple-50";
+      case "READ_START":
+        return "text-amber-600 bg-amber-50";
+      case "VOCAB_SEARCH":
+        return "text-rose-600 bg-rose-50";
+      default:
+        return "text-gray-600 bg-gray-50";
+    }
+  };
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-[#F8F8F8] border border-[#EBEBEB]">
+    <div className="flex items-center justify-between p-4 rounded-lg bg-[#F8F8F8] border border-[#EBEBEB] transition-all hover:shadow-sm">
       <div className="flex items-center gap-3">
-        {image ? (
-          <img
-            src={image}
-            alt={name}
-            className="object-cover w-10 h-10 rounded-full"
-          />
-        ) : (
-          <div className="flex items-center justify-center w-10 h-10 font-medium text-white bg-gray-300 rounded-full">
-            {firstLetter}
-          </div>
-        )}
+        <div className="flex items-center justify-center w-10 h-10 font-bold text-white bg-[#1F3A2B] rounded-full">
+          {firstLetter}
+        </div>
         <div>
-          <p className="text-sm font-semibold">{name}</p>
-          <p className="text-base text-gray-400 normalFont">
-            Last active: {lastActive}
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold">{displayName}</p>
+            <span
+              className={`text-[10px] px-2 py-0.5 rounded-full font-medium normalFont ${getActionColor(action_type)}`}
+            >
+              {action_type.replace("_", " ")}
+            </span>
+          </div>
+          <p className="text-sm text-gray-500 normalFont mt-0.5 line-clamp-1">
+            {description}
           </p>
         </div>
       </div>
-      <div className="flex gap-6 text-base text-[#2E2E2E]">
-        <div className="flex flex-col items-center text-sm justify-center headerFont">
-          {dict} <span className="normalFont"> dict. click</span>
-        </div>
-        <div className="flex flex-col items-center justify-center headerFont">
-          {stories} <span className="normalFont"> stories</span>
-        </div>
+      <div className="text-right">
+        <p className="text-xs text-gray-400 normalFont">{time_ago}</p>
       </div>
     </div>
   );
@@ -38,7 +57,7 @@ const ActivityRow = ({ name, lastActive, dict, stories, image }) => {
 
 export default function RecentActivity({ activity }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 5;
   const totalPages = Math.ceil(activity.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -53,35 +72,47 @@ export default function RecentActivity({ activity }) {
   };
 
   return (
-    <div className="mt-8 p-4 bg-white border border-[#0000001A] rounded-xl">
-      <h2 className="mb-4 text-base font-semibold">Recent Student Activity</h2>
+    <div className="mt-8 p-6 bg-white border border-[#0000001A] rounded-xl shadow-sm">
+      <h2 className="mb-6 text-base font-bold text-[#1F3A2B] headerFont">
+        Recent Student Activity
+      </h2>
 
-      <div className="space-y-3">
-        {currentItems.map((item) => (
-          <ActivityRow key={item.id} {...item} />
-        ))}
+      <div className="space-y-4">
+        {currentItems.length > 0 ? (
+          currentItems.map((item, idx) => (
+            <ActivityRow key={item.timestamp || idx} {...item} />
+          ))
+        ) : (
+          <p className="text-center text-gray-500 py-4 normalFont">
+            No recent activity found.
+          </p>
+        )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-end gap-2 mt-4">
-          <button
-            onClick={handlePrev}
-            disabled={currentPage === 1}
-            className="px-3 py-1 text-sm font-medium text-gray-500 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span className="px-3 py-1 text-sm font-medium text-gray-700">
-            {currentPage} / {totalPages}
-          </span>
-          <button
-            onClick={handleNext}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 text-sm font-medium text-gray-500 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
+        <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+          <p className="text-xs text-gray-400 normalFont">
+            Showing {startIndex + 1}-
+            {Math.min(startIndex + itemsPerPage, activity.length)} of{" "}
+            {activity.length}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrev}
+              disabled={currentPage === 1}
+              className="px-4 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg disabled:opacity-30 transition-colors hover:bg-gray-100"
+            >
+              Previous
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+              className="px-4 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg disabled:opacity-30 transition-colors hover:bg-gray-100"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

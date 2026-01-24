@@ -132,6 +132,19 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Privacy Policy"],
     }),
+
+    // Teacher Panel
+    // === Teacher Dashboard ===
+    getTeacherDashboard: builder.query({
+      query: () => ({
+        url: "/teachers/dashboard/",
+        method: "GET",
+      }),
+      providesTags: ["Teacher Dashboard"],
+    }),
+    
+    
+    
   }),
 });
 export const {
@@ -151,4 +164,5 @@ export const {
   useUpdateSiteAdminTermsAndConditionsMutation,
   useGetSiteAdminPrivacyPolicyQuery,
   useUpdateSiteAdminPrivacyPolicyMutation,
+  useGetTeacherDashboardQuery,
 } = authApi;
