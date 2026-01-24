@@ -3,13 +3,11 @@ import GradeLevel from "./components/homepage/GradeLevel";
 import Carousel from "./components/homepage/Carousel/Carousel";
 import AboutCard from "./components/homepage/AboutCard";
 import AchivementCard from "./components/homepage/AchivementCard";
-import { Toaster } from "react-hot-toast";
 import Footer from "./pages/Footer";
 
 function App() {
   return (
     <div>
-      <Toaster position="top-right" />
       <Hero />
 
       <div
@@ -34,7 +32,9 @@ function App() {
           >
             Start Reading Now!
           </button>
-          <p className="text-[#6A7282] normalFont">Sign up to unlock all stories</p>
+          <p className="text-[#6A7282] normalFont">
+            Sign up to unlock all stories
+          </p>
         </div>
       </div>
       <AboutCard />

@@ -11,7 +11,7 @@ import card5 from "../../assets/story-library/card5.png";
 import card6 from "../../assets/story-library/card6.png";
 import star from "../../assets/story-library/star.svg";
 import star2 from "../../assets/story-library/star2.svg";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export const MyStories = () => {
   const storiesData = [
@@ -122,12 +122,11 @@ export const MyStories = () => {
           </div>
         </div>
       ),
-      { duration: 4000 }
+      { duration: 4000 },
     );
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF0F5] to-white p-4 md:p-10">
-      <Toaster />
       <div className="w-full lg:w-[90vw] xl:w-[80vw] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-12 gap-4 md:gap-0">

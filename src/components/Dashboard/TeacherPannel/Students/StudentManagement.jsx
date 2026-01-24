@@ -4,9 +4,13 @@ import { FiUserPlus } from "react-icons/fi";
 import { LuEye } from "react-icons/lu";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 import AddStudentModal from "./AddStudentModal";
 import EditStudentModal from "./EditStudentModal";
-import { useGetAllStudentsListQuery } from "../../../../redux/api/authApi";
+import {
+  useGetAllStudentsListQuery,
+  useDeleteStudentMutation,
+} from "../../../../redux/api/authApi";
 
 export default function StudentManagementTable() {
   const {
@@ -20,6 +24,7 @@ export default function StudentManagementTable() {
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [deleteStudent] = useDeleteStudentMutation();
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -33,6 +38,54 @@ export default function StudentManagementTable() {
     console.log("Editing student:", user);
     setSelectedStudent(user);
     setOpenEdit(true);
+  };
+
+  const handleDelete = (id) => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-3 p-1">
+          <p className="text-sm font-medium text-[#1F3A2B] normalFont">
+            Are you sure you want to delete this student?
+          </p>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="px-4 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors normalFont"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  await deleteStudent(id).unwrap();
+                  toast.success("Student deleted successfully");
+                } catch (err) {
+                  const errorMsg =
+                    err?.data?.detail ||
+                    err?.data?.message ||
+                    err?.data?.error ||
+                    "Failed to delete student";
+                  toast.error(errorMsg);
+                }
+              }}
+              className="px-4 py-1.5 text-xs font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors normalFont"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: 4000,
+        position: "top-center",
+        style: {
+          minWidth: "300px",
+          borderRadius: "12px",
+          boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+        },
+      },
+    );
   };
 
   // Get unique grades from the data and sort them
@@ -175,7 +228,10 @@ export default function StudentManagementTable() {
                       >
                         <MdOutlineModeEditOutline size={18} />
                       </button>
-                      <button className="p-2 rounded hover:bg-red-100 text-red-500 flex items-center justify-center">
+                      <button
+                        onClick={() => handleDelete(s.id)}
+                        className="p-2 rounded hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                      >
                         <Trash size={18} />
                       </button>
                     </div>
