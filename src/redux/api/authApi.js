@@ -167,6 +167,15 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Student Detail"],
     }),
+    // === Update Student ===
+    updateStudent: builder.mutation({
+      query: (data) => ({
+        url: `/teachers/students/${data.id}/action/`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Students"],
+    }),
   }),
 });
 export const {
@@ -190,4 +199,5 @@ export const {
   useGetAllStudentsListQuery,
   useAddStudentMutation,
   useGetStudentDetailQuery,
+  useUpdateStudentMutation,
 } = authApi;

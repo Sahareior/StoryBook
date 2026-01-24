@@ -19,6 +19,7 @@ export default function StudentManagementTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -30,6 +31,7 @@ export default function StudentManagementTable() {
 
   const handleEdit = (user) => {
     console.log("Editing student:", user);
+    setSelectedStudent(user);
     setOpenEdit(true);
   };
 
@@ -238,7 +240,11 @@ export default function StudentManagementTable() {
       )}
 
       <AddStudentModal isOpen={open} onClose={() => setOpen(false)} />
-      <EditStudentModal isOpen={openEdit} onClose={() => setOpenEdit(false)} />
+      <EditStudentModal
+        isOpen={openEdit}
+        onClose={() => setOpenEdit(false)}
+        userData={selectedStudent}
+      />
     </div>
   );
 }
