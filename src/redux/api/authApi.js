@@ -142,7 +142,14 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Teacher Dashboard"],
     }),
-    
+    // === All Students List ===
+    getAllStudentsList: builder.query({
+      query: () => ({
+        url: "/teachers/all/students/",
+        method: "GET",
+      }),
+      providesTags: ["Students"],
+    }),
     
     
   }),
@@ -165,4 +172,5 @@ export const {
   useGetSiteAdminPrivacyPolicyQuery,
   useUpdateSiteAdminPrivacyPolicyMutation,
   useGetTeacherDashboardQuery,
+  useGetAllStudentsListQuery,
 } = authApi;
