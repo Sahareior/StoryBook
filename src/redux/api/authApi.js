@@ -150,7 +150,15 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Students"],
     }),
-    
+    // === Add Student ===
+    addStudent: builder.mutation({
+      query: (data) => ({
+        url: "/teachers/all/students/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Students"],
+    }),
     
   }),
 });
@@ -173,4 +181,5 @@ export const {
   useUpdateSiteAdminPrivacyPolicyMutation,
   useGetTeacherDashboardQuery,
   useGetAllStudentsListQuery,
+  useAddStudentMutation,
 } = authApi;
