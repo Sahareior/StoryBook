@@ -40,7 +40,7 @@ const ActivityRow = ({
             <span
               className={`text-[10px] px-2 py-0.5 rounded-full font-medium normalFont ${getActionColor(action_type)}`}
             >
-              {action_type.replace("_", " ")}
+              {action_type ? action_type.replace("_", " ") : "Activity"}
             </span>
           </div>
           <p className="text-sm text-gray-500 normalFont mt-0.5 line-clamp-1">

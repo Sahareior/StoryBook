@@ -1,8 +1,8 @@
 import React from "react";
 import { Users, BookOpen, Search } from "lucide-react";
 import StatsCard from "../TeacherPannel/TeacherDash/StatsCard";
-import RecentActivity from "../TeacherPannel/TeacherDash/RecentActivity";
 import { useGetSiteOverviewQuery } from "../../../redux/api/authApi";
+import RecentActivity from "./RecentActivity";
 
 export default function AdminDashboard() {
   // Fetch site overview from API
@@ -36,15 +36,7 @@ export default function AdminDashboard() {
     },
   ];
 
-  const activityData =
-    data?.recent_students_activity?.map((item, idx) => ({
-      id: idx + 1,
-      name: item.description,
-      lastActive: item.time_ago,
-      dict: 0,
-      stories: 0,
-      image: "",
-    })) || [];
+  const activityData = data?.recent_students_activity || [];
 
   // ---------------- Render ----------------
   return (
