@@ -6,7 +6,6 @@ import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { FiSettings } from "react-icons/fi";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { persistor } from "../../../redux/stores/store";
 import { logout } from "../../../redux/features/authSlice";
 import { BookOpen, MessageSquare } from "lucide-react";
 
@@ -22,40 +21,25 @@ const AdminSidebar = ({ collapsed }) => {
   const isActiveSettings = location.pathname.startsWith("/dashboard/settings");
 
   const handleLogOut = () => {
-    try {
-      dispatch(logout());
-    } catch (e) {
-      console.log(e)
-    }
-    try {
-      persistor.purge();
-    } catch (e) {
-      console.log(e)
-    }
-    // Clear common auth keys from localStorage as well
-    try {
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-      localStorage.removeItem("persist:root");
-    } catch (e) {
-      console.log(e)
-    }
-    navigate("/login", { replace: true });
+    console.log(
+      "%c --- SIDEBAR: LOGOUT BUTTON CLICKED --- ",
+      "background: blue; color: white;",
+    );
+    dispatch(logout());
+    navigate("/login");
   };
 
   return (
-    <div className="green border-r-2 border-r-[#E8E8E8] min-h-screen flex flex-col justify-between inter">
-      {/* Logo Section */}
-      <div className="flex flex-col py-4">
+    <div className="green border-r-2 border-r-[#E8E8E8] h-screen flex flex-col justify-between inter">
+      {/* Scrollable Content Area */}
+      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar">
         <Link to="/">
           <div
-            className={`flex items-center gap-2 pt-2 pb-4 cursor-pointer ${
+            className={`flex items-center gap-2 pt-6 pb-4 cursor-pointer ${
               collapsed ? "px-0" : "px-6"
             }`}
           >
-            {/* <img src={logo} alt="Logo" className="h-[63px] w-[63px] mb-2" /> */}
+            {/* Logo */}
             {!collapsed && (
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 bg-yellow-400 rounded-[10px] inline-flex justify-center items-center">
@@ -75,154 +59,99 @@ const AdminSidebar = ({ collapsed }) => {
         </Link>
 
         {/* Menu Items */}
-        <nav className="flex flex-col text-[#364636] space-y-2 mt-4">
+        <nav className="flex flex-col text-[#364636] space-y-2 mt-4 px-2">
           {/* Admin Dashboard */}
-          <NavLink
-            to="/dashboard/admin"
-            className="flex items-center justify-between "
-          >
+          <NavLink to="/dashboard/admin" className="w-full">
             <div
-              className={`flex items-center justify-between  font-medium p-2 pt-2 ${
-                collapsed ? "w-[63px] h-[40px]" : " h-[50px]"
+              className={`flex items-center gap-2 p-3 rounded-xl transition-all ${
+                isActiveDashboard
+                  ? "bg-[yellow] text-black"
+                  : "text-white hover:bg-white/10"
               }`}
             >
-              <div
-                className={`flex items-center gap-2 justify-start p-5 text-center ${
-                  collapsed ? "w-[63px] h-[40px]" : "w-[250px] h-[50px]"
-                } ${
-                  isActiveDashboard
-                    ? "bg-[yellow] text-black rounded-xl"
-                    : "text-white"
-                }`}
-              >
-                <AiOutlineHome className="w-5 h-5" />
-                {!collapsed && (
-                  <h1 className="text-[10px] font-normal headerFont">
-                    Dashboard
-                  </h1>
-                )}
-              </div>
+              <AiOutlineHome className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && (
+                <span className="text-xs headerFont">Dashboard</span>
+              )}
             </div>
           </NavLink>
 
           {/* User Management */}
-          <NavLink
-            to="/dashboard/user-management"
-            className="flex items-center justify-between"
-          >
+          <NavLink to="/dashboard/user-management" className="w-full">
             <div
-              className={`flex items-center justify-between  font-medium p-2 pt-2 ${
-                collapsed ? "w-[63px] h-[40px]" : " h-[50px]"
+              className={`flex items-center gap-2 p-3 rounded-xl transition-all ${
+                isActiveUsers
+                  ? "bg-[yellow] text-black"
+                  : "text-white hover:bg-white/10"
               }`}
             >
-              <div
-                className={`flex items-center gap-2 justify-start p-5 text-center ${
-                  collapsed ? "w-[63px] h-[40px]" : "w-[250px] h-[50px]"
-                } ${
-                  isActiveUsers
-                    ? "bg-[yellow] text-black rounded-xl"
-                    : "text-white"
-                }`}
-              >
-                <FaUsers className="w-5 h-5" />
-                {!collapsed && (
-                  <h1 className="text-[10px] font-normal headerFont">
-                    User Management
-                  </h1>
-                )}
-              </div>
+              <FaUsers className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && (
+                <span className="text-xs headerFont">User Management</span>
+              )}
             </div>
           </NavLink>
 
           {/* Story Library */}
-          <NavLink
-            to="/dashboard/storyLibrary"
-            className="flex items-center justify-between "
-          >
+          <NavLink to="/dashboard/storyLibrary" className="w-full">
             <div
-              className={`flex items-center justify-between  font-medium p-2 pt-2 ${
-                collapsed ? "w-[63px] h-[40px]" : "h-[50px]"
+              className={`flex items-center gap-2 p-3 rounded-xl transition-all ${
+                isActiveAdmin
+                  ? "bg-[yellow] text-black"
+                  : "text-white hover:bg-white/10"
               }`}
             >
-              <div
-                className={`flex items-center gap-2 justify-start p-5 text-center ${
-                  collapsed ? "w-[63px] h-[40px]" : "w-[250px] h-[50px]"
-                } ${
-                  isActiveAdmin
-                    ? "bg-[yellow] text-black rounded-xl"
-                    : "text-white"
-                }`}
-              >
-                <BookOpen className="w-5 h-5" />
-                {!collapsed && (
-                  <h1 className="text-[10px] font-normal headerFont">
-                    Story Library
-                  </h1>
-                )}
-              </div>
+              <BookOpen className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && (
+                <span className="text-xs headerFont">Story Library</span>
+              )}
             </div>
           </NavLink>
 
           {/* AI Chatbot */}
-          <NavLink
-            to="/dashboard/ai-bot"
-            className="flex items-center justify-between "
-          >
+          <NavLink to="/dashboard/ai-bot" className="w-full">
             <div
-              className={`flex items-center justify-between  font-medium p-2 pt-2 ${
-                collapsed ? "w-[63px] h-[40px]" : "w-[280px] h-[50px]"
+              className={`flex items-center gap-2 p-3 rounded-xl transition-all ${
+                isActiveSubs
+                  ? "bg-[yellow] text-black"
+                  : "text-white hover:bg-white/10"
               }`}
             >
-              <div
-                className={`flex items-center gap-2 justify-start p-5 text-center ${
-                  collapsed ? "w-[63px] h-[40px]" : "w-[250px] h-[50px]"
-                } ${
-                  isActiveSubs
-                    ? "bg-[yellow] text-black rounded-xl"
-                    : "text-white"
-                }`}
-              >
-                <MessageSquare className="w-5 h-5" />
-                {!collapsed && (
-                  <h1 className="text-[10px] font-normal headerFont">AI Control</h1>
-                )}
-              </div>
+              <MessageSquare className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && (
+                <span className="text-xs headerFont">AI Control</span>
+              )}
             </div>
           </NavLink>
 
           {/* Settings */}
-          <NavLink
-            to="/dashboard/settings"
-            className="flex items-center justify-between "
-          >
-            <div className="flex items-center justify-between w-[280px] font-medium p-2 pt-2">
-              <div
-                className={`flex items-center gap-2 justify-start p-5 text-center ${
-                  collapsed ? "w-[63px] h-[40px]" : "w-[250px] h-[50px]"
-                } ${
-                  isActiveSettings
-                    ? "bg-[yellow] text-black rounded-xl"
-                    : "text-white"
-                }`}
-              >
-                <FiSettings className="w-5 h-5" />
-                {!collapsed && (
-                  <h1 className="text-[10px] font-normal headerFont">Settings</h1>
-                )}
-              </div>
+          <NavLink to="/dashboard/settings" className="w-full">
+            <div
+              className={`flex items-center gap-2 p-3 rounded-xl transition-all ${
+                isActiveSettings
+                  ? "bg-[yellow] text-black"
+                  : "text-white hover:bg-white/10"
+              }`}
+            >
+              <FiSettings className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && (
+                <span className="text-xs headerFont">Settings</span>
+              )}
             </div>
           </NavLink>
         </nav>
       </div>
 
-      {/* Logout */}
-      <div
+      {/* Logout Button (Fixed at bottom) */}
+      <button
         onClick={handleLogOut}
-        className="flex items-center p-2 pb-10 pl-8 space-x-3 text-red-600 rounded-lg cursor-pointer normalFont"
+        type="button"
+        className="flex items-center w-full p-4 mb-6 space-x-3 text-red-500 hover:bg-red-500/10 transition-all cursor-pointer normalFont border-t border-white/10"
+        style={{ paddingLeft: collapsed ? "28px" : "32px" }}
       >
-        <FaSignOutAlt />
-        {!collapsed && <span>Log Out</span>}
-      </div>
+        <FaSignOutAlt className="flex-shrink-0" />
+        {!collapsed && <span className="font-medium">Log Out</span>}
+      </button>
     </div>
   );
 };

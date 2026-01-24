@@ -1,10 +1,14 @@
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { MdOutlineDashboard } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { LuUsers } from "react-icons/lu";
+import { FaSignOutAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { logout } from "../../../redux/features/authSlice";
 
 const TeacherSidebar = ({ collapsed }) => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
 
   const isActiveDashboard = location.pathname.startsWith("/dashboard/teacher");
@@ -12,11 +16,11 @@ const TeacherSidebar = ({ collapsed }) => {
   const isActiveSettings = location.pathname.startsWith("/dashboard/settings");
   const isActiveStudent = location.pathname.startsWith("/dashboard/student");
 
-  // const handleLogout = () => {
-  //   // dispatch(userLoggedOut());
-  //   localStorage.removeItem("accessToken");
-  //   navigate("/login", { replace: true });
-  // };
+  const handleLogout = () => {
+    console.log("Teacher logout triggered");
+    dispatch(logout());
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="green border-r-2 border-r-[#E8E8E8] min-h-screen flex flex-col justify-between inter">
@@ -110,13 +114,13 @@ const TeacherSidebar = ({ collapsed }) => {
       </div>
 
       {/* Logout */}
-      {/* <div
+      <div
         onClick={handleLogout}
-        className="flex items-center p-2 pb-10 pl-10 space-x-3 text-red-600 rounded-lg cursor-pointer"
+        className="flex items-center p-2 pb-10 pl-10 space-x-3 text-red-600 rounded-lg cursor-pointer normalFont"
       >
         <FaSignOutAlt />
         {!collapsed && <span>Log Out</span>}
-      </div> */}
+      </div>
     </div>
   );
 };

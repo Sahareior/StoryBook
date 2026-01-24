@@ -3,36 +3,22 @@ import Header from "./Header";
 import { useEffect, useState } from "react";
 
 import { MdOutlineMenu } from "react-icons/md";
-import { GoArrowLeft, GoArrowRight } from "react-icons/go";
-import { LuArrowLeftFromLine } from "react-icons/lu";
-import { FaArrowRight } from "react-icons/fa6";
 import AdminDashboard from "./AdminPannel/AdminDashboard";
 import TeacherDashboard from "./TeacherPannel/TeacherDashboard";
 import AdminSidebar from "./Sidebar/AdminSidebar";
 import TeacherSidebar from "./Sidebar/TeacherSidebar";
+import { useSelector } from "react-redux";
+
 const Root = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = localStorage.getItem('role')
-  // const dispatch = useDispatch();
-  // const { data: profile, refetch } = useGetProfileQuery();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+
+  // Use role from state OR localStorage as fallback
+  const role = user?.role || localStorage.getItem("role");
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // useEffect(() => {
-  //   const authData = JSON.parse(localStorage.getItem("auth"));
-  //   refetch();
-  //   if (authData?.access && profile) {
-  //     dispatch(
-  //       userLoggedIn({
-  //         token: authData.access,
-  //         user: profile,
-  //         schoolname: triggerGetSchoolInfo?.name,
-  //       })
-  //     );
-  //   }
-  // }, [profile, dispatch, refetch, triggerGetSchoolInfo]);
 
   useEffect(() => {
     if (!role) navigate("/login");

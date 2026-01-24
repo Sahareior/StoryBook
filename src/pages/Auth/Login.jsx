@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { BookOpen, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import bgImg from "../../assets/bg.png";
 import { useLoginMutation } from "../../redux/api/authApi";
+import { setCredentials } from "../../redux/features/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
 
   const handleSubmit = async (e) => {
@@ -18,10 +21,14 @@ const Login = () => {
     try {
       const response = await login({ email, password }).unwrap();
 
-      // Store response data
-      localStorage.setItem("access", response.access);
-      localStorage.setItem("refresh", response.refresh);
-      localStorage.setItem("user", JSON.stringify(response.user));
+      // Dispatch to Redux (this also sets localStorage for access, refresh, and user)
+      dispatch(
+        setCredentials({
+          access: response.access,
+          refresh: response.refresh,
+          user: response.user,
+        }),
+      );
 
       toast.success("Login successful");
 
