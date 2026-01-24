@@ -1,37 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { useGetSiteAdminAiAssistantSettingsQuery, useUpdateSiteAdminAiAssistantSettingsMutation } from '../../../../redux/api/authApi';
-import toast, { Toaster } from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import {
+  useGetSiteAdminAiAssistantSettingsQuery,
+  useUpdateSiteAdminAiAssistantSettingsMutation,
+} from "../../../../redux/api/authApi";
+import toast from "react-hot-toast";
 
 const Chatbots = () => {
-  const { data: aiSettings, isLoading: isFetching, error: fetchError } = useGetSiteAdminAiAssistantSettingsQuery();
-  const [updateAiSettings, { isLoading: isUpdating }] = useUpdateSiteAdminAiAssistantSettingsMutation();
+  const {
+    data: aiSettings,
+    isLoading: isFetching,
+    error: fetchError,
+  } = useGetSiteAdminAiAssistantSettingsQuery();
+  const [updateAiSettings, { isLoading: isUpdating }] =
+    useUpdateSiteAdminAiAssistantSettingsMutation();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    assistant_name: '',
-    tone: '',
-    reading_level_strictness: '',
+    assistant_name: "",
+    tone: "",
+    reading_level_strictness: "",
     max_response_tokens: 500,
-    forbidden_topics: '',
+    forbidden_topics: "",
   });
 
   useEffect(() => {
     if (aiSettings) {
       setFormData({
-        assistant_name: aiSettings.assistant_name || '',
-        tone: aiSettings.ai_behaviour_settings?.tone || '',
-        reading_level_strictness: aiSettings.ai_behaviour_settings?.reading_level_strictness || '',
-        max_response_tokens: aiSettings.ai_behaviour_settings?.max_response_tokens || 500,
-        forbidden_topics: aiSettings.ai_behaviour_settings?.forbidden_topics?.join(', ') || '',
+        assistant_name: aiSettings.assistant_name || "",
+        tone: aiSettings.ai_behaviour_settings?.tone || "",
+        reading_level_strictness:
+          aiSettings.ai_behaviour_settings?.reading_level_strictness || "",
+        max_response_tokens:
+          aiSettings.ai_behaviour_settings?.max_response_tokens || 500,
+        forbidden_topics:
+          aiSettings.ai_behaviour_settings?.forbidden_topics?.join(", ") || "",
       });
     }
   }, [aiSettings]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -52,24 +63,32 @@ const Chatbots = () => {
           tone: formData.tone,
           reading_level_strictness: formData.reading_level_strictness,
           max_response_tokens: parseInt(formData.max_response_tokens) || 500,
-          forbidden_topics: formData.forbidden_topics.split(',').map(topic => topic.trim()).filter(Boolean),
-        }
+          forbidden_topics: formData.forbidden_topics
+            .split(",")
+            .map((topic) => topic.trim())
+            .filter(Boolean),
+        },
       };
 
       await updateAiSettings(payload).unwrap();
-      toast.success('Configuration saved successfully!');
+      toast.success("Configuration saved successfully!");
       setIsEditing(false);
     } catch (err) {
-      toast.error(err?.data?.message || 'Failed to save configuration');
+      toast.error(err?.data?.message || "Failed to save configuration");
     }
   };
 
-  if (isFetching) return <div className="p-10 text-center">Loading settings...</div>;
-  if (fetchError) return <div className="p-10 text-center text-red-500">Error loading settings</div>;
+  if (isFetching)
+    return <div className="p-10 text-center">Loading settings...</div>;
+  if (fetchError)
+    return (
+      <div className="p-10 text-center text-red-500">
+        Error loading settings
+      </div>
+    );
 
   return (
     <div className="max-w-8xl mx-auto p-6">
-      <Toaster position="top-right" />
       {/* Header Section */}
       <header className="mb-8 mx-12 text-center md:text-left">
         <h1 className="text-[24px] font-bold text-[#1F1F1F] mb-2 headerFont">
@@ -86,8 +105,10 @@ const Chatbots = () => {
           <h2 className="text-[16px] font-semibold text-gray-700 headerFont">
             AI Behaviour Settings
           </h2>
-          <span className={`px-3 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${isEditing ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-            {isEditing ? 'Editing Mode' : 'View Mode'}
+          <span
+            className={`px-3 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${isEditing ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}
+          >
+            {isEditing ? "Editing Mode" : "View Mode"}
           </span>
         </div>
 
@@ -106,7 +127,9 @@ const Chatbots = () => {
                 onChange={handleChange}
                 disabled={!isEditing}
                 className={`w-full p-3 rounded-lg border transition-all duration-200 normalFont ${
-                  isEditing ? 'bg-white border-[#294637] ring-2 ring-[#4a7c61]' : 'bg-gray-50 border-gray-200 text-gray-600'
+                  isEditing
+                    ? "bg-white border-[#294637] ring-2 ring-[#4a7c61]"
+                    : "bg-gray-50 border-gray-200 text-gray-600"
                 }`}
                 placeholder="e.g. StoryBuddy"
               />
@@ -123,7 +146,9 @@ const Chatbots = () => {
                 onChange={handleChange}
                 disabled={!isEditing}
                 className={`w-full p-3 rounded-lg border transition-all duration-200 normalFont ${
-                  isEditing ? 'bg-white border-[#294637] ring-2 ring-[#4a7c61]' : 'bg-gray-50 border-gray-200 text-gray-600'
+                  isEditing
+                    ? "bg-white border-[#294637] ring-2 ring-[#4a7c61]"
+                    : "bg-gray-50 border-gray-200 text-gray-600"
                 }`}
               >
                 <option value="encouraging">Encouraging</option>
@@ -144,7 +169,9 @@ const Chatbots = () => {
                 onChange={handleChange}
                 disabled={!isEditing}
                 className={`w-full p-3 rounded-lg border transition-all duration-200 normalFont ${
-                  isEditing ? 'bg-white border-[#294637] ring-2 ring-[#4a7c61]' : 'bg-gray-50 border-gray-200 text-gray-600'
+                  isEditing
+                    ? "bg-white border-[#294637] ring-2 ring-[#4a7c61]"
+                    : "bg-gray-50 border-gray-200 text-gray-600"
                 }`}
               >
                 <option value="high">High (Strict adherence)</option>
@@ -165,7 +192,9 @@ const Chatbots = () => {
                 onChange={handleChange}
                 disabled={!isEditing}
                 className={`w-full p-3 rounded-lg border transition-all duration-200 normalFont ${
-                  isEditing ? 'bg-white border-[#294637] ring-2 ring-[#4a7c61]' : 'bg-gray-50 border-gray-200 text-gray-600'
+                  isEditing
+                    ? "bg-white border-[#294637] ring-2 ring-[#4a7c61]"
+                    : "bg-gray-50 border-gray-200 text-gray-600"
                 }`}
                 placeholder="e.g. 500"
               />
@@ -184,11 +213,15 @@ const Chatbots = () => {
               onChange={handleChange}
               disabled={!isEditing}
               className={`w-full p-4 rounded-lg border transition-all duration-200 normalFont resize-none ${
-                isEditing ? 'bg-white border-[#294637] ring-2 ring-[#4a7c61]' : 'bg-gray-50 border-gray-200 text-gray-600'
+                isEditing
+                  ? "bg-white border-[#294637] ring-2 ring-[#4a7c61]"
+                  : "bg-gray-50 border-gray-200 text-gray-600"
               }`}
               placeholder="violence, horror, political content..."
             />
-            <p className="text-[11px] text-gray-400 italic">Topics the AI should strictly avoid mentioning in responses.</p>
+            <p className="text-[11px] text-gray-400 italic">
+              Topics the AI should strictly avoid mentioning in responses.
+            </p>
           </div>
         </div>
 
@@ -198,12 +231,17 @@ const Chatbots = () => {
             onClick={handleEditToggle}
             disabled={isUpdating}
             className={`py-3 px-10 rounded-lg text-white font-bold tracking-wide transition-all duration-300 shadow-md transform hover:-translate-y-0.5 active:scale-95 headerFont ${
-              isUpdating ? 'opacity-50 cursor-not-allowed' : ''
+              isUpdating ? "opacity-50 cursor-not-allowed" : ""
             }`}
             style={{
-              background: 'linear-gradient(90deg, #294637 0%, #4a7c61 100%)'}}
+              background: "linear-gradient(90deg, #294637 0%, #4a7c61 100%)",
+            }}
           >
-            {isUpdating ? 'Saving...' : isEditing ? 'Save Changes' : 'Edit Configuration'}
+            {isUpdating
+              ? "Saving..."
+              : isEditing
+                ? "Save Changes"
+                : "Edit Configuration"}
           </button>
         </div>
       </div>

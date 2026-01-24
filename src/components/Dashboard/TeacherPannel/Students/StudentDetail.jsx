@@ -6,7 +6,6 @@ import { useNavigate } from "react-router";
 import StorySelectModal from "./StorySelectModal";
 import { IoClose } from "react-icons/io5";
 import toast from "react-hot-toast";
-import { Toaster } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useGetSiteAdminStudentDetailQuery } from "../../../../redux/api/authApi";
 const fakeStudent = {
@@ -48,7 +47,11 @@ export default function StudentDetail() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
   const { id } = useParams();
-  const { data: student, isLoading, error } = useGetSiteAdminStudentDetailQuery(id);
+  const {
+    data: student,
+    isLoading,
+    error,
+  } = useGetSiteAdminStudentDetailQuery(id);
   const navigate = useNavigate();
   // Star Rating Component
   const StarRating = ({ rating = 3, maxStars = 5 }) => {
@@ -75,7 +78,6 @@ export default function StudentDetail() {
 
   return (
     <div className="p-6">
-      <Toaster position="top-right" />
       {/* Back Button */}
       <button
         onClick={handleBack}
@@ -88,17 +90,21 @@ export default function StudentDetail() {
       {isLoading ? (
         <div className="text-center p-10">Loading student details...</div>
       ) : error ? (
-        <div className="text-center p-10 text-red-500">Error loading student details</div>
+        <div className="text-center p-10 text-red-500">
+          Error loading student details
+        </div>
       ) : (
         <>
           <div className="flex items-center gap-4 p-6 mb-20 border rounded-lg">
             <div className="flex items-center justify-center w-12 h-12 text-base text-white green rounded-full border border-[#EBEBEB] headerFont">
-              {(student?.first_name || student?.email || "S").charAt(0).toUpperCase()}
+              {(student?.first_name || student?.email || "S")
+                .charAt(0)
+                .toUpperCase()}
             </div>
             <div className="normalFont">
               <h2 className="text-sm text-[#1F1F1F] headerFont">
-                {student?.first_name || student?.last_name 
-                  ? `${student.first_name} ${student.last_name}`.trim() 
+                {student?.first_name || student?.last_name
+                  ? `${student.first_name} ${student.last_name}`.trim()
                   : student?.email}
               </h2>
               <p className="text-sm text-[#2E2E2E] inter mt-1">
@@ -202,10 +208,16 @@ export default function StudentDetail() {
               className="flex items-center justify-between px-3 py-6 border border-[#EBEBEB] bg-white rounded-lg inter"
             >
               <div>
-                <p className="font-normal text-[10px] text-[#1F1F1F] headerFont">{item.word}</p>
-                <p className="text-xs text-[#1F1F1F] normalFont">From: {item.from}</p>
+                <p className="font-normal text-[10px] text-[#1F1F1F] headerFont">
+                  {item.word}
+                </p>
+                <p className="text-xs text-[#1F1F1F] normalFont">
+                  From: {item.from}
+                </p>
               </div>
-              <p className="text-[10px] text-green-600 headerFont">{item.times} times</p>
+              <p className="text-[10px] text-green-600 headerFont">
+                {item.times} times
+              </p>
             </div>
           ))}
         </div>
@@ -239,7 +251,9 @@ export default function StudentDetail() {
                     {story.published ? "Published" : "Draft"}
                   </p>
                 </div>
-                <p className="text-xs text-[#4A5565] mb-3 normalFont">by {story.author}</p>
+                <p className="text-xs text-[#4A5565] mb-3 normalFont">
+                  by {story.author}
+                </p>
                 <div className="flex items-center justify-between normalFont">
                   <p className="flex items-center gap-2 text-sm text-[#4A5565]">
                     {" "}

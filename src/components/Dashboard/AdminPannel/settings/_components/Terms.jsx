@@ -1,13 +1,17 @@
-import React from 'react';
-import EditSection from '../../editor/EditSection';
+import React from "react";
+import EditSection from "../../editor/EditSection";
 
-const Terms = () => {
-     const terms = 'This is Terms section'
+const Terms = ({ data, isEditing, onChange, isLoading }) => {
+  if (isLoading)
     return (
-        <div>
-            <EditSection data={terms} />
-        </div>
+      <div className="p-10 text-center">Loading terms & conditions...</div>
     );
+
+  return (
+    <div>
+      <EditSection data={data} isEditing={isEditing} onChange={onChange} />
+    </div>
+  );
 };
 
 export default Terms;

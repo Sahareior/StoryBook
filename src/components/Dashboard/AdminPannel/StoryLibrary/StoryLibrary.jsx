@@ -13,7 +13,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { IoBookOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
 import StoryModal from "./StoryModal";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export const StoryLibrary = () => {
   const [stories, setStories] = useState([
@@ -123,15 +123,16 @@ export const StoryLibrary = () => {
           </div>
         </div>
       ),
-      { duration: 4000 }
+      { duration: 4000 },
     );
   };
 
   return (
     <div className="flex w-[80vw] mx-auto flex-col justify-center  py-7 gap-10">
-      <Toaster />
       <div className="">
-        <h1 className="text-stone-900 text-xl font-semibold headerFont">Story Library</h1>
+        <h1 className="text-stone-900 text-xl font-semibold headerFont">
+          Story Library
+        </h1>
         <p className="text-stone-900 text-xl font-normal mt-1 normalFont">
           View and manage all students
         </p>

@@ -98,6 +98,40 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["General Settings"],
     }),
+    // === Admin Terms & Conditions ===
+    getSiteAdminTermsAndConditions: builder.query({
+      query: () => ({
+        url: "/site/config/terms-and-conditions/",
+        method: "GET",
+      }),
+      providesTags: ["Terms & Conditions"],
+    }),
+    // === Admin Terms & Conditions Update ===
+    updateSiteAdminTermsAndConditions: builder.mutation({
+      query: (data) => ({
+        url: "/site/config/terms-and-conditions/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Terms & Conditions"],
+    }),
+    // === Admin Privacy Policy ===
+    getSiteAdminPrivacyPolicy: builder.query({
+      query: () => ({
+        url: "/site/config/privacy/",
+        method: "GET",
+      }),
+      providesTags: ["Privacy Policy"],
+    }),
+    // === Admin Privacy Policy Update ===
+    updateSiteAdminPrivacyPolicy: builder.mutation({
+      query: (data) => ({
+        url: "/site/config/privacy/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Privacy Policy"],
+    }),
   }),
 });
 export const {
@@ -113,4 +147,8 @@ export const {
   useUpdateSiteAdminAiAssistantSettingsMutation,
   useGetSiteAdminGeneralSettingsQuery,
   useUpdateSiteAdminGeneralSettingsMutation,
+  useGetSiteAdminTermsAndConditionsQuery,
+  useUpdateSiteAdminTermsAndConditionsMutation,
+  useGetSiteAdminPrivacyPolicyQuery,
+  useUpdateSiteAdminPrivacyPolicyMutation,
 } = authApi;

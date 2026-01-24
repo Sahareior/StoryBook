@@ -5,8 +5,10 @@ import Privacy from "./_components/Privacy";
 import {
   useGetSiteAdminGeneralSettingsQuery,
   useUpdateSiteAdminGeneralSettingsMutation,
+  useGetSiteAdminTermsAndConditionsQuery,
+  useUpdateSiteAdminTermsAndConditionsMutation,
 } from "../../../../redux/api/authApi";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const Header = ({ isEditing, onAction, isLoading }) => {
   return (
@@ -64,6 +66,28 @@ const Settings = () => {
     setGeneralFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Terms & Conditions API
+  const { data: termsData, isLoading: isFetchingTerms } =
+    useGetSiteAdminTermsAndConditionsQuery();
+  const [updateTerms, { isLoading: isUpdatingTerms }] =
+    useUpdateSiteAdminTermsAndConditionsMutation();
+
+  const [termsFormData, setTermsFormData] = useState({
+    content: "",
+  });
+
+  useEffect(() => {
+    if (termsData) {
+      setTermsFormData({
+        content: termsData.content || "",
+      });
+    }
+  }, [termsData]);
+
+  const handleTermsChange = (newContent) => {
+    setTermsFormData({ content: newContent });
+  };
+
   const handleAction = async () => {
     if (!isEditing) {
       setIsEditing(true);
@@ -78,6 +102,16 @@ const Settings = () => {
         setIsEditing(false);
       } catch (err) {
         toast.error(err?.data?.message || "Failed to update general settings");
+      }
+    } else if (active === 1) {
+      try {
+        await updateTerms(termsFormData).unwrap();
+        toast.success("Terms & Conditions updated successfully!");
+        setIsEditing(false);
+      } catch (err) {
+        toast.error(
+          err?.data?.message || "Failed to update terms & conditions",
+        );
       }
     } else {
       // Logic for Terms and Privacy will be added later
@@ -99,7 +133,14 @@ const Settings = () => {
         />
       );
     } else if (active === 1) {
-      return <Terms isEditing={isEditing} />;
+      return (
+        <Terms
+          data={termsFormData}
+          isEditing={isEditing}
+          onChange={handleTermsChange}
+          isLoading={isFetchingTerms}
+        />
+      );
     } else {
       return <Privacy isEditing={isEditing} />;
     }
@@ -113,13 +154,11 @@ const Settings = () => {
 
   return (
     <div className="p-4">
-      <Toaster position="top-right" />
       <div className="mb-8">
         <Header
-          active={active}
           isEditing={isEditing}
           onAction={handleAction}
-          isLoading={isUpdatingGeneral}
+          isLoading={isUpdatingGeneral || isUpdatingTerms}
         />
       </div>
 

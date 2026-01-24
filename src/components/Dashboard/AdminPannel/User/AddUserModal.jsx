@@ -1,15 +1,20 @@
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import { useAddSiteAdminStudentMutation, useAddSiteAdminTeacherMutation } from "../../../../redux/api/authApi";
+import toast from "react-hot-toast";
+import {
+  useAddSiteAdminStudentMutation,
+  useAddSiteAdminTeacherMutation,
+} from "../../../../redux/api/authApi";
 
 export default function AddUserModal({ isOpen, onClose }) {
   const [userType, setUserType] = useState("student");
-  const [addStudent, { isLoading: isAddingStudent }] = useAddSiteAdminStudentMutation();
-  const [addTeacher, { isLoading: isAddingTeacher }] = useAddSiteAdminTeacherMutation();
-  
+  const [addStudent, { isLoading: isAddingStudent }] =
+    useAddSiteAdminStudentMutation();
+  const [addTeacher, { isLoading: isAddingTeacher }] =
+    useAddSiteAdminTeacherMutation();
+
   const isAnyLoading = isAddingStudent || isAddingTeacher;
-  
+
   const [studentData, setStudentData] = useState({
     first_name: "",
     last_name: "",
@@ -31,9 +36,9 @@ export default function AddUserModal({ isOpen, onClose }) {
 
   const handleInputChange = (type, field, value) => {
     if (type === "student") {
-      setStudentData(prev => ({ ...prev, [field]: value }));
+      setStudentData((prev) => ({ ...prev, [field]: value }));
     } else {
-      setTeacherData(prev => ({ ...prev, [field]: value }));
+      setTeacherData((prev) => ({ ...prev, [field]: value }));
     }
   };
 
@@ -84,7 +89,6 @@ export default function AddUserModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <Toaster />
       <div className="w-full max-w-lg bg-white rounded-xl shadow-lg p-6">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
@@ -124,9 +128,15 @@ export default function AddUserModal({ isOpen, onClose }) {
 
         {/* Form */}
         {userType === "student" ? (
-          <StudentForm data={studentData} onChange={(f, v) => handleInputChange("student", f, v)} />
+          <StudentForm
+            data={studentData}
+            onChange={(f, v) => handleInputChange("student", f, v)}
+          />
         ) : (
-          <TeacherForm data={teacherData} onChange={(f, v) => handleInputChange("teacher", f, v)} />
+          <TeacherForm
+            data={teacherData}
+            onChange={(f, v) => handleInputChange("teacher", f, v)}
+          />
         )}
 
         {/* Footer */}
@@ -144,7 +154,11 @@ export default function AddUserModal({ isOpen, onClose }) {
             disabled={isAnyLoading}
             className="px-4 py-2 bg-gradient-to-r from-[#2B4839] to-[#95D3C3] text-white rounded-[10px] text-base font-normal disabled:opacity-50"
           >
-            {isAnyLoading ? "Thinking..." : userType === "student" ? "Add Student" : "Add Teacher"}
+            {isAnyLoading
+              ? "Thinking..."
+              : userType === "student"
+                ? "Add Student"
+                : "Add Teacher"}
           </button>
         </div>
       </div>
@@ -170,43 +184,45 @@ function StudentForm({ data, onChange }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <Input 
-          label="First Name" 
-          value={data.first_name} 
-          onChange={(e) => onChange("first_name", e.target.value)} 
-          placeholder="Enter first name" 
+        <Input
+          label="First Name"
+          value={data.first_name}
+          onChange={(e) => onChange("first_name", e.target.value)}
+          placeholder="Enter first name"
         />
-        <Input 
-          label="Last Name" 
-          value={data.last_name} 
-          onChange={(e) => onChange("last_name", e.target.value)} 
-          placeholder="Enter last name" 
+        <Input
+          label="Last Name"
+          value={data.last_name}
+          onChange={(e) => onChange("last_name", e.target.value)}
+          placeholder="Enter last name"
         />
       </div>
-      <Input 
-        label="Email" 
-        type="email" 
-        value={data.email} 
-        onChange={(e) => onChange("email", e.target.value)} 
-        placeholder="Enter email address" 
+      <Input
+        label="Email"
+        type="email"
+        value={data.email}
+        onChange={(e) => onChange("email", e.target.value)}
+        placeholder="Enter email address"
       />
-      <Input 
-        label="Password" 
-        type="password" 
-        value={data.password} 
-        onChange={(e) => onChange("password", e.target.value)} 
-        placeholder="Create password" 
+      <Input
+        label="Password"
+        type="password"
+        value={data.password}
+        onChange={(e) => onChange("password", e.target.value)}
+        placeholder="Create password"
       />
 
       <div className="grid grid-cols-2 gap-4">
-        <Input 
-          label="Grade Level" 
-          value={data.grade_level} 
-          onChange={(e) => onChange("grade_level", e.target.value)} 
-          placeholder="e.g. 4" 
+        <Input
+          label="Grade Level"
+          value={data.grade_level}
+          onChange={(e) => onChange("grade_level", e.target.value)}
+          placeholder="e.g. 4"
         />
         <div>
-          <label className="block text-sm font-medium mb-1">Vocabulary Proficiency *</label>
+          <label className="block text-sm font-medium mb-1">
+            Vocabulary Proficiency *
+          </label>
           <select
             value={data.vocabulary_proficiency}
             onChange={(e) => onChange("vocabulary_proficiency", e.target.value)}
@@ -226,38 +242,38 @@ function TeacherForm({ data, onChange }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <Input 
-          label="First Name" 
-          value={data.first_name} 
-          onChange={(e) => onChange("first_name", e.target.value)} 
-          placeholder="Enter first name" 
+        <Input
+          label="First Name"
+          value={data.first_name}
+          onChange={(e) => onChange("first_name", e.target.value)}
+          placeholder="Enter first name"
         />
-        <Input 
-          label="Last Name" 
-          value={data.last_name} 
-          onChange={(e) => onChange("last_name", e.target.value)} 
-          placeholder="Enter last name" 
+        <Input
+          label="Last Name"
+          value={data.last_name}
+          onChange={(e) => onChange("last_name", e.target.value)}
+          placeholder="Enter last name"
         />
       </div>
-      <Input 
-        label="Email" 
-        type="email" 
-        value={data.email} 
-        onChange={(e) => onChange("email", e.target.value)} 
-        placeholder="Enter email address" 
+      <Input
+        label="Email"
+        type="email"
+        value={data.email}
+        onChange={(e) => onChange("email", e.target.value)}
+        placeholder="Enter email address"
       />
-      <Input 
-        label="Password" 
-        type="password" 
-        value={data.password} 
-        onChange={(e) => onChange("password", e.target.value)} 
-        placeholder="Create password" 
+      <Input
+        label="Password"
+        type="password"
+        value={data.password}
+        onChange={(e) => onChange("password", e.target.value)}
+        placeholder="Create password"
       />
-      <Input 
-        label="Grade Level" 
-        value={data.grade_level} 
-        onChange={(e) => onChange("grade_level", e.target.value)} 
-        placeholder="e.g. 5" 
+      <Input
+        label="Grade Level"
+        value={data.grade_level}
+        onChange={(e) => onChange("grade_level", e.target.value)}
+        placeholder="e.g. 5"
       />
     </div>
   );

@@ -1,39 +1,40 @@
-import React, { useRef, useState } from "react";
-import Quill from "quill";
+import React, { useRef, useState, useEffect } from "react";
 import Editor from "./Editor";
 
-
-
-const EditSection = ({ data, section }) => {
+const EditSection = ({ data, isEditing, onChange }) => {
   const [range, setRange] = useState();
-  const [lastChange, setLastChange] = useState();
-  const [readOnly, setReadOnly] = useState(false);
-
+  const [readOnly, setReadOnly] = useState(true);
 
   const quillRef = useRef(null);
 
-  // Extract the actual content from the API response
-  const getContentFromData = () => {
-    if (!data) return "";
-    
-    // If data has a 'text' property, use that
-    if (typeof data === 'object' && data.text) {
-      return data.text;
-    }
-    
-    // If data is already a string, use it directly
-    if (typeof data === 'string') {
-      return data;
-    }
-    
-    return "";
-  };
+  // Extract the actual content from the data prop
+  const contentValue =
+    typeof data === "object" && data.content
+      ? data.content
+      : typeof data === "string"
+        ? data
+        : "";
 
-  const handleUpdate = async () => {
-     const content = quillRef.current?.root.innerHTML || "";
-  };
+  // Sync internal readOnly with parent isEditing
+  useEffect(() => {
+    setReadOnly(!isEditing);
+  }, [isEditing]);
 
-  // const isLoading = section === "terms" ? isTermsLoading : isPrivacyLoading;
+  // Sync internal quill content with external data
+  useEffect(() => {
+    if (quillRef.current && contentValue !== undefined) {
+      if (quillRef.current.root.innerHTML !== contentValue) {
+        quillRef.current.root.innerHTML = contentValue;
+      }
+    }
+  }, [contentValue]);
+
+  const handleEditorChange = (delta, oldDelta, source) => {
+    if (source === "user" && onChange) {
+      const content = quillRef.current?.root.innerHTML || "";
+      onChange(content);
+    }
+  };
 
   return (
     <div
@@ -46,22 +47,10 @@ const EditSection = ({ data, section }) => {
       <Editor
         ref={quillRef}
         readOnly={readOnly}
-        defaultValue={getContentFromData()} // Use the extracted content
+        defaultValue={contentValue}
         onSelectionChange={setRange}
-        onTextChange={setLastChange}
+        onTextChange={handleEditorChange}
       />
-
-      {/* Update button */}
-      <div className="flex justify-end right-5 absolute top-5">
-        {/* <button
-          style={{ background: "#343F4F" }}
-       
-
-          className="px-5 py-1 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-Update
-        </button> */}
-      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import EditUserModal from "./EditUserModal";
 import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useGetSiteAdminTeachersOverviewQuery } from "../../../../redux/api/authApi";
 
@@ -9,27 +9,34 @@ export default function TeachersTable({
   searchQuery = "",
   selectedGrade = "all",
 }) {
-  const { data: apiTeachers, isLoading, error } = useGetSiteAdminTeachersOverviewQuery();
+  const {
+    data: apiTeachers,
+    isLoading,
+    error,
+  } = useGetSiteAdminTeachersOverviewQuery();
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const navigate = useNavigate();
 
-  const tableData = apiTeachers ? apiTeachers.map(teacher => {
-    const name = (teacher.first_name || teacher.last_name)
-      ? `${teacher.first_name} ${teacher.last_name}`.trim()
-      : teacher.email.split("@")[0];
-    
-    return {
-      id: teacher.id,
-      name: name,
-      avatar: name.charAt(0).toUpperCase(),
-      email: teacher.email,
-      totalStudent: 0, 
-      lastActivity: "-", 
-      grade: teacher.grade_level,
-      status: "Active",
-    };
-  }) : [];
+  const tableData = apiTeachers
+    ? apiTeachers.map((teacher) => {
+        const name =
+          teacher.first_name || teacher.last_name
+            ? `${teacher.first_name} ${teacher.last_name}`.trim()
+            : teacher.email.split("@")[0];
+
+        return {
+          id: teacher.id,
+          name: name,
+          avatar: name.charAt(0).toUpperCase(),
+          email: teacher.email,
+          totalStudent: 0,
+          lastActivity: "-",
+          grade: teacher.grade_level,
+          status: "Active",
+        };
+      })
+    : [];
 
   const filteredData = tableData.filter((item) => {
     const matchesSearch = item.name
@@ -41,12 +48,13 @@ export default function TeachersTable({
   });
 
   const handleDelete = (id) => {
-    toast.error(`Delete functionality for ID ${id} not integrated with API yet.`);
+    toast.error(
+      `Delete functionality for ID ${id} not integrated with API yet.`,
+    );
   };
 
   return (
     <div className="overflow-x-auto bg-white rounded-xl border">
-      <Toaster />
       <table className="w-full text-sm">
         <thead className="border-b bg-gray-50 text-gray-600 headerFont text-xs">
           <tr className="text-center">
@@ -74,20 +82,28 @@ export default function TeachersTable({
         <tbody className="divide-y normalFont">
           {isLoading && (
             <tr>
-              <td colSpan={6} className="px-6 py-10 text-center">Loading teachers...</td>
+              <td colSpan={6} className="px-6 py-10 text-center">
+                Loading teachers...
+              </td>
             </tr>
           )}
           {error && (
             <tr>
-              <td colSpan={6} className="px-6 py-10 text-center text-red-500">Error loading teachers</td>
+              <td colSpan={6} className="px-6 py-10 text-center text-red-500">
+                Error loading teachers
+              </td>
             </tr>
           )}
           {!isLoading && !error && filteredData.length === 0 && (
             <tr>
-              <td colSpan={6} className="px-6 py-10 text-center text-gray-500">No teachers found</td>
+              <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
+                No teachers found
+              </td>
             </tr>
           )}
-          {!isLoading && !error && filteredData.length > 0 && 
+          {!isLoading &&
+            !error &&
+            filteredData.length > 0 &&
             filteredData.map((item) => (
               <tr
                 key={item.id}
@@ -125,7 +141,9 @@ export default function TeachersTable({
                 <td className="px-6 py-4 flex items-center gap-4 justify-center align-middle">
                   <Eye
                     size={16}
-                    onClick={() => navigate(`/dashboard/user-details/${item.id}`)}
+                    onClick={() =>
+                      navigate(`/dashboard/user-details/${item.id}`)
+                    }
                     className="cursor-pointer text-gray-600 hover:text-black"
                   />
                   <Pencil
@@ -143,8 +161,7 @@ export default function TeachersTable({
                   />
                 </td>
               </tr>
-            ))
-          }
+            ))}
         </tbody>
       </table>
       <EditUserModal
