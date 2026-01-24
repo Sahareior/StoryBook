@@ -64,6 +64,23 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Teachers"],
     }),
+    // === Admin AI Assistant Settings ===
+    getSiteAdminAiAssistantSettings: builder.query({
+      query: () => ({
+        url: "/site/config/ai/behavior/",
+        method: "GET",
+      }),
+      providesTags: ["AI Assistant Settings"],
+    }),
+    // === Admin AI Assistant Settings Update ===
+    updateSiteAdminAiAssistantSettings: builder.mutation({
+      query: (data) => ({
+        url: "/site/config/ai/behavior/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["AI Assistant Settings"],
+    }),
   }),
 });
 export const {
@@ -75,4 +92,6 @@ export const {
   useGetSiteAdminTeachersOverviewQuery,
   useGetSiteAdminTeacherDetailQuery,
   useAddSiteAdminTeacherMutation,
+  useGetSiteAdminAiAssistantSettingsQuery,
+  useUpdateSiteAdminAiAssistantSettingsMutation,
 } = authApi;

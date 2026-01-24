@@ -184,7 +184,7 @@ const AdminSidebar = ({ collapsed }) => {
               >
                 <MessageSquare className="w-5 h-5" />
                 {!collapsed && (
-                  <h1 className="text-[10px] font-normal headerFont">AI Chatbot</h1>
+                  <h1 className="text-[10px] font-normal headerFont">AI Control</h1>
                 )}
               </div>
             </div>
