@@ -125,7 +125,7 @@ path: "/achivement", element: <Achievement />
         element: <Students />,
       },
       {
-        path: "students/details",
+        path: "students/details/:id",
         element: <StudentDetail></StudentDetail>,
       },
       {

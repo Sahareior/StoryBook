@@ -118,7 +118,7 @@ export default function StudentsTable({
               <td className="p-3">
                 <div className="flex items-center justify-center gap-2">
                   <button
-                    onClick={() => navigate("/dashboard/students/details")}
+                    onClick={() => navigate(`/dashboard/students/details/${item.id}`)}
                     className="p-2 rounded hover:bg-green-100 text-[#4A5565] flex items-center justify-center"
                   >
                     <Eye size={20} />

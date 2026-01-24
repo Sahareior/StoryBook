@@ -7,6 +7,8 @@ import StorySelectModal from "./StorySelectModal";
 import { IoClose } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { useGetSiteAdminStudentDetailQuery } from "../../../../redux/api/authApi";
 const fakeStudent = {
   name: "Sarah Johnson",
   lastActive: "30min ago",
@@ -42,12 +44,11 @@ const fakeStudent = {
     },
   ],
 };
-
 export default function StudentDetail() {
-  // const [recommended, setRecommended] = useState(fakeStudent.recommendedStory);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
-
+  const { id } = useParams();
+  const { data: student, isLoading, error } = useGetSiteAdminStudentDetailQuery(id);
   const navigate = useNavigate();
   // Star Rating Component
   const StarRating = ({ rating = 3, maxStars = 5 }) => {
@@ -85,94 +86,106 @@ export default function StudentDetail() {
       </button>
 
       {/* Student Info */}
-      <div className="flex items-center gap-4 p-6 mb-20 border rounded-lg">
-        <div className="flex items-center justify-center w-12 h-12 text-base text-white green rounded-full border border-[#EBEBEB] headerFont">
-          {fakeStudent.name.charAt(0)}
-        </div>
-        <div className="normalFont">
-          <h2 className="text-sm text-[#1F1F1F] headerFont">{fakeStudent.name}</h2>
-          <p className="text-sm text-[#2E2E2E] inter mt-1">
-            Last active: {fakeStudent.lastActive}
-          </p>
-          <div className="flex gap-2 mt-2">
-            <span className="px-2 py-1 text-xs inter text-[#F39F05] bg-[#FFEDC5] rounded-full">
-              Grade {fakeStudent.grade}
-            </span>
-            <span className="px-2 py-1 text-xs  inter text-[#F39F05] bg-[#FFEDC5] rounded-full">
-              {fakeStudent.vocabulary}
-            </span>
+      {isLoading ? (
+        <div className="text-center p-10">Loading student details...</div>
+      ) : error ? (
+        <div className="text-center p-10 text-red-500">Error loading student details</div>
+      ) : (
+        <>
+          <div className="flex items-center gap-4 p-6 mb-20 border rounded-lg">
+            <div className="flex items-center justify-center w-12 h-12 text-base text-white green rounded-full border border-[#EBEBEB] headerFont">
+              {(student?.first_name || student?.email || "S").charAt(0).toUpperCase()}
+            </div>
+            <div className="normalFont">
+              <h2 className="text-sm text-[#1F1F1F] headerFont">
+                {student?.first_name || student?.last_name 
+                  ? `${student.first_name} ${student.last_name}`.trim() 
+                  : student?.email}
+              </h2>
+              <p className="text-sm text-[#2E2E2E] inter mt-1">
+                Last active: {fakeStudent.lastActive}
+              </p>
+              <div className="flex gap-2 mt-2">
+                <span className="px-2 py-1 text-xs inter text-[#F39F05] bg-[#FFEDC5] rounded-full">
+                  Grade {student?.grade_level || fakeStudent.grade}
+                </span>
+                <span className="px-2 py-1 text-xs  inter text-[#F39F05] bg-[#FFEDC5] rounded-full capitalize">
+                  {student?.vocabulary_proficiency || fakeStudent.vocabulary}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Story & Reading Level */}
-      <div className="flex justify-between gap-4 mb-6">
-        <div className="flex flex-col items-start justify-center gap-3 ">
-          <label className="text-xs font-bold text-[#2E2E2E] headerFont">
-            Total Story:
-          </label>
-          <input
-            type="number"
-            value={fakeStudent.totalStory}
-            readOnly
-            className="px-3 py-1 mt-1 text-center border rounded-lg normalFont"
-          />
-        </div>
-        <div className="flex flex-col items-start justify-center gap-3 ">
-          <label className="text-xs font-bold text-[#2E2E2E] headerFont">
-            Reading level:
-          </label>
-          <input
-            type="number"
-            value={fakeStudent.readingLevel}
-            readOnly
-            className="px-3 py-1 mt-1 text-center border rounded-lg normalFont"
-          />
-        </div>
-        <div className="flex flex-col items-start justify-center gap-3 ">
-          <label className="text-xs font-bold text-[#2E2E2E] headerFont">
-            Recommend Story:
-          </label>
-          <div className="flex items-center justify-start gap-2 normalFont">
-            {/* No story selected */}
-            {!selectedStory && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="px-4 py-1 text-sm text-black inter bg-[#FFFFFF] rounded-lg border border-[#E5E5E5]"
-              >
-                Select story
-              </button>
-            )}
-
-            {/* Story selected */}
-            {selectedStory && (
-              <>
-                <div className="flex items-center gap-2 px-4 py-1 text-sm bg-[#F5F5F5] border border-[#E5E5E5] rounded-lg">
-                  <span className="text-black normalFont">
-                    {selectedStory.title}
-                  </span>
+          {/* Story & Reading Level */}
+          <div className="flex justify-between gap-4 mb-6">
+            <div className="flex flex-col items-start justify-center gap-3 ">
+              <label className="text-xs font-bold text-[#2E2E2E] headerFont">
+                Total Story:
+              </label>
+              <input
+                type="number"
+                value={fakeStudent.totalStory}
+                readOnly
+                className="px-3 py-1 mt-1 text-center border rounded-lg normalFont"
+              />
+            </div>
+            <div className="flex flex-col items-start justify-center gap-3 ">
+              <label className="text-xs font-bold text-[#2E2E2E] headerFont">
+                Reading level:
+              </label>
+              <input
+                type="number"
+                value={fakeStudent.readingLevel}
+                readOnly
+                className="px-3 py-1 mt-1 text-center border rounded-lg normalFont"
+              />
+            </div>
+            <div className="flex flex-col items-start justify-center gap-3 ">
+              <label className="text-xs font-bold text-[#2E2E2E] headerFont">
+                Recommend Story:
+              </label>
+              <div className="flex items-center justify-start gap-2 normalFont">
+                {/* No story selected */}
+                {!selectedStory && (
                   <button
-                    onClick={() => setSelectedStory(null)}
-                    className="text-gray-500 hover:text-red-500"
+                    onClick={() => setIsModalOpen(true)}
+                    className="px-4 py-1 text-sm text-black inter bg-[#FFFFFF] rounded-lg border border-[#E5E5E5]"
                   >
-                    <IoClose size={16} />
+                    Select story
                   </button>
-                </div>
+                )}
 
-                <button
-                  onClick={() => {
-                    toast.success("Story recommended successfully!");
-                    setSelectedStory(null);
-                  }}
-                  className="flex items-center justify-center gap-2 px-4 py-1 text-xs text-black bg-[#E8CC13] rounded-lg headerFont"
-                >
-                  <LuSend /> Recommend
-                </button>
-              </>
-            )}
+                {/* Story selected */}
+                {selectedStory && (
+                  <>
+                    <div className="flex items-center gap-2 px-4 py-1 text-sm bg-[#F5F5F5] border border-[#E5E5E5] rounded-lg">
+                      <span className="text-black normalFont">
+                        {selectedStory.title}
+                      </span>
+                      <button
+                        onClick={() => setSelectedStory(null)}
+                        className="text-gray-500 hover:text-red-500"
+                      >
+                        <IoClose size={16} />
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        toast.success("Story recommended successfully!");
+                        setSelectedStory(null);
+                      }}
+                      className="flex items-center justify-center gap-2 px-4 py-1 text-xs text-black bg-[#E8CC13] rounded-lg headerFont"
+                    >
+                      <LuSend /> Recommend
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       {/* Dictionary Views */}
       <div className="mb-20 bg-white border border-[#F3F3F3] p-6 rounded-xl mt-24">

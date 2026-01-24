@@ -17,17 +17,24 @@ export const authApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
-    // === SITE OVERVIEW ===
+    // === Admin Students Overview ===
     getSiteAdminStudentsOverview: builder.query({
       query: () => ({
         url: "/site/admin/students/",
         method: "GET",
       }),
     }),
+    getSiteAdminStudentDetail: builder.query({
+      query: (id) => ({
+        url: `/site/admin/students/${id}/`,
+        method: "GET",
+      }),
     }),
+  }),
 });
 export const {
   useLoginMutation,
   useGetSiteOverviewQuery,
   useGetSiteAdminStudentsOverviewQuery,
+  useGetSiteAdminStudentDetailQuery,
 } = authApi;
