@@ -7,6 +7,8 @@ import {
   useUpdateSiteAdminGeneralSettingsMutation,
   useGetSiteAdminTermsAndConditionsQuery,
   useUpdateSiteAdminTermsAndConditionsMutation,
+  useGetSiteAdminPrivacyPolicyQuery,
+  useUpdateSiteAdminPrivacyPolicyMutation,
 } from "../../../../redux/api/authApi";
 import toast from "react-hot-toast";
 
@@ -88,6 +90,28 @@ const Settings = () => {
     setTermsFormData({ content: newContent });
   };
 
+  // Privacy Policy API
+  const { data: privacyData, isLoading: isFetchingPrivacy } =
+    useGetSiteAdminPrivacyPolicyQuery();
+  const [updatePrivacy, { isLoading: isUpdatingPrivacy }] =
+    useUpdateSiteAdminPrivacyPolicyMutation();
+
+  const [privacyFormData, setPrivacyFormData] = useState({
+    content: "",
+  });
+
+  useEffect(() => {
+    if (privacyData) {
+      setPrivacyFormData({
+        content: privacyData.content || "",
+      });
+    }
+  }, [privacyData]);
+
+  const handlePrivacyChange = (newContent) => {
+    setPrivacyFormData({ content: newContent });
+  };
+
   const handleAction = async () => {
     if (!isEditing) {
       setIsEditing(true);
@@ -113,10 +137,14 @@ const Settings = () => {
           err?.data?.message || "Failed to update terms & conditions",
         );
       }
-    } else {
-      // Logic for Terms and Privacy will be added later
-      toast.error("Update logic for this section is not implemented yet.");
-      setIsEditing(false);
+    } else if (active === 2) {
+      try {
+        await updatePrivacy(privacyFormData).unwrap();
+        toast.success("Privacy Policy updated successfully!");
+        setIsEditing(false);
+      } catch (err) {
+        toast.error(err?.data?.message || "Failed to update privacy policy");
+      }
     }
   };
 
@@ -142,7 +170,14 @@ const Settings = () => {
         />
       );
     } else {
-      return <Privacy isEditing={isEditing} />;
+      return (
+        <Privacy
+          data={privacyFormData}
+          isEditing={isEditing}
+          onChange={handlePrivacyChange}
+          isLoading={isFetchingPrivacy}
+        />
+      );
     }
   };
 
@@ -158,7 +193,7 @@ const Settings = () => {
         <Header
           isEditing={isEditing}
           onAction={handleAction}
-          isLoading={isUpdatingGeneral || isUpdatingTerms}
+          isLoading={isUpdatingGeneral || isUpdatingTerms || isUpdatingPrivacy}
         />
       </div>
 

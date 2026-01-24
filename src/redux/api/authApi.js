@@ -118,7 +118,7 @@ export const authApi = api.injectEndpoints({
     // === Admin Privacy Policy ===
     getSiteAdminPrivacyPolicy: builder.query({
       query: () => ({
-        url: "/site/config/privacy/",
+        url: "/site/config/privacy-and-policy/",
         method: "GET",
       }),
       providesTags: ["Privacy Policy"],
@@ -126,7 +126,7 @@ export const authApi = api.injectEndpoints({
     // === Admin Privacy Policy Update ===
     updateSiteAdminPrivacyPolicy: builder.mutation({
       query: (data) => ({
-        url: "/site/config/privacy/",
+        url: "/site/config/privacy-and-policy/",
         method: "POST",
         body: data,
       }),
