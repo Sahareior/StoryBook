@@ -23,6 +23,7 @@ export const authApi = api.injectEndpoints({
         url: "/site/admin/students/",
         method: "GET",
       }),
+      providesTags: ["Students"],
     }),
     // === Admin Students Detail ===
     getSiteAdminStudentDetail: builder.query({
@@ -30,6 +31,15 @@ export const authApi = api.injectEndpoints({
         url: `/site/admin/students/${id}/`,
         method: "GET",
       }),
+    }),
+    // === Admin Students Add ===
+    addSiteAdminStudent: builder.mutation({
+      query: (data) => ({
+        url: "/site/admin/students/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Students"],
     }),
     // === Admin Teachers Overview ===
     getSiteAdminTeachersOverview: builder.query({
@@ -45,6 +55,15 @@ export const authApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    // === Admin Teacher Add ===
+    addSiteAdminTeacher: builder.mutation({
+      query: (data) => ({
+        url: "/site/admin/teachers/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Teachers"],
+    }),
   }),
 });
 export const {
@@ -52,6 +71,8 @@ export const {
   useGetSiteOverviewQuery,
   useGetSiteAdminStudentsOverviewQuery,
   useGetSiteAdminStudentDetailQuery,
+  useAddSiteAdminStudentMutation,
   useGetSiteAdminTeachersOverviewQuery,
   useGetSiteAdminTeacherDetailQuery,
+  useAddSiteAdminTeacherMutation,
 } = authApi;
