@@ -1,6 +1,11 @@
 import React from "react";
 
-const PersonalInfo = () => {
+const PersonalInfo = ({ data, isEditing, onChange, isLoading }) => {
+  if (isLoading)
+    return (
+      <div className="p-10 text-center">Loading platform information...</div>
+    );
+
   return (
     <div className="max-w-8xl bg-white rounded-2xl border border-gray-200 p-9">
       {/* Title */}
@@ -17,9 +22,13 @@ const PersonalInfo = () => {
           </label>
           <input
             type="text"
-            value="LiteracyHub"
-            readOnly
-            className="w-full rounded-md bg-gray-100 px-4 py-4 text-gray-900 text-sm outline-none normalFont"
+            name="platform_name"
+            value={data.platform_name}
+            onChange={onChange}
+            readOnly={!isEditing}
+            className={`w-full rounded-md px-4 py-4 text-gray-900 text-sm outline-none normalFont transition-all ${
+              isEditing ? "bg-white border border-green-200" : "bg-gray-100"
+            }`}
           />
         </div>
 
@@ -30,9 +39,13 @@ const PersonalInfo = () => {
           </label>
           <input
             type="email"
-            value="admin@literacyhub.com"
-            readOnly
-            className="w-full rounded-md bg-gray-100 px-4 py-4 text-gray-900 text-sm outline-none normalFont"
+            name="contact_email"
+            value={data.contact_email}
+            onChange={onChange}
+            readOnly={!isEditing}
+            className={`w-full rounded-md px-4 py-4 text-gray-900 text-sm outline-none normalFont transition-all ${
+              isEditing ? "bg-white border border-green-200" : "bg-gray-100"
+            }`}
           />
         </div>
 
@@ -43,9 +56,13 @@ const PersonalInfo = () => {
           </label>
           <input
             type="email"
-            value="support@literacyhub.com"
-            readOnly
-            className="w-full rounded-md bg-gray-100 px-4 py-4 text-gray-900 text-sm outline-none normalFont"
+            name="support_email"
+            value={data.support_email}
+            onChange={onChange}
+            readOnly={!isEditing}
+            className={`w-full rounded-md px-4 py-4 text-gray-900 text-sm outline-none normalFont transition-all ${
+              isEditing ? "bg-white border border-green-200" : "bg-gray-100"
+            }`}
           />
         </div>
       </div>

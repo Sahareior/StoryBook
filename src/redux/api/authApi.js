@@ -81,6 +81,23 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["AI Assistant Settings"],
     }),
+    // === Admin General Settings ===
+    getSiteAdminGeneralSettings: builder.query({
+      query: () => ({
+        url: "/site/config/platform/",
+        method: "GET",
+      }),
+      providesTags: ["General Settings"],
+    }),
+    // === Admin General Settings Update ===
+    updateSiteAdminGeneralSettings: builder.mutation({
+      query: (data) => ({
+        url: "/site/config/platform/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["General Settings"],
+    }),
   }),
 });
 export const {
@@ -94,4 +111,6 @@ export const {
   useAddSiteAdminTeacherMutation,
   useGetSiteAdminAiAssistantSettingsQuery,
   useUpdateSiteAdminAiAssistantSettingsMutation,
+  useGetSiteAdminGeneralSettingsQuery,
+  useUpdateSiteAdminGeneralSettingsMutation,
 } = authApi;
