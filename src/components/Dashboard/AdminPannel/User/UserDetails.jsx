@@ -1,51 +1,47 @@
-import { ArrowLeft, Star, BookOpen, Send } from "lucide-react";
-import profile from "../../../../assets/student.png";
+import { ArrowLeft } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useGetSiteAdminTeacherDetailQuery } from "../../../../redux/api/authApi";
 
-const dictionaryData = [
-  { word: "magnificent", from: "The Magic Garden", count: 3 },
-  { word: "adventure", from: "Space Adventure", count: 6 },
-  { word: "mysterious", from: "Ocean Friends", count: 4 },
-  { word: "brilliant", from: "Mountain Climbers", count: 2 },
-];
+export default function UserDetailsPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { data: teacher, isLoading, error } = useGetSiteAdminTeacherDetailQuery(id);
 
-const stories = [
-  {
-    title: "The Enchanted Forest",
-    author: "Sarah Williams",
-    grade: 3,
-    pages: 15,
-    rating: 2,
-    image: "https://placehold.co/400x250",
-  },
-  {
-    title: "The Enchanted Forest",
-    author: "Sarah Williams",
-    grade: 3,
-    pages: 15,
-    rating: 2,
-    image: "https://placehold.co/400x250",
-  },
-];
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading teacher details...</div>;
+  }
 
-export default function StudentDetailsPage() {
+  if (error) {
+    return <div className="min-h-screen flex items-center justify-center text-red-500">Error loading teacher details</div>;
+  }
+
+  const fullName = (teacher?.first_name || teacher?.last_name)
+    ? `${teacher.first_name} ${teacher.last_name}`.trim()
+    : teacher?.email;
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Back */}
-      <button className="flex items-center gap-2 text-gray-700 mb-6">
+      <button 
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-gray-700 mb-6 hover:text-black transition-colors"
+      >
         <ArrowLeft size={18} />
-        <span className="font-medium">Back to Student</span>
+        <span className="font-medium">Back to Teachers</span>
       </button>
 
-      {/* Student Info */}
+      {/* Teacher Info */}
       <div className="bg-white rounded-xl border p-6 flex flex-col md:flex-row gap-4">
-        <img src={profile} alt="student" className="w-20 h-20 rounded-full" />
+        <div className="w-20 h-20 rounded-full bg-green-900 text-white flex items-center justify-center text-2xl font-bold">
+          {fullName?.charAt(0).toUpperCase()}
+        </div>
         <div>
-          <h2 className="text-xl font-semibold">Sarah Johnson</h2>
-          <p className="text-sm text-gray-600">Last active: 30 min ago</p>
+          <h2 className="text-xl font-semibold">{fullName}</h2>
+          <p className="text-sm text-gray-600">Email: {teacher?.email}</p>
 
           <div className="flex gap-2 mt-2">
-            <Badge text="Grade 4" />
-            <Badge text="Advanced" />
+            <Badge text={`Grade ${teacher?.grade_level || '-'}`} />
+            <Badge text="Teacher" />
           </div>
         </div>
       </div>
@@ -53,58 +49,37 @@ export default function StudentDetailsPage() {
       {/* Stats */}
       <div className="w-full mt-6 flex items-center justify-between">
         <div className="flex items-center gap-20">
-          <Stat label="Total Story" value="10" />
-          <Stat label="Reading Level" value="10" />
+          <Stat label="Total Students" value="0" />
+          <Stat label="Last Activity" value="-" />
         </div>
 
         <div>
-          <label className="font-semibold block mb-2">Recommend Story</label>
+          <label className="font-semibold block mb-2">Assign Grade</label>
           <div className="flex gap-3">
             <div className="w-44 px-4 py-3 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-neutral-200 inline-flex justify-center items-center">
               <button className="justify-start text-zinc-800 text-sm font-normal">
-                Select story
+                Select grade
               </button>
             </div>
             <div className="w-44 px-4 py-3 relative bg-yellow-400 rounded-lg flex items-center justify-center gap-2 cursor-pointer">
-              <Send size={16} color="#1F3A2B" strokeWidth={1.5} />
               <button className="text-center justify-start text-zinc-800 text-sm font-normal">
-                Recommend
+                Update
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Dictionary Views */}
+      {/* Dictionary Views - Example section, can be replaced by real teacher data if available */}
       <div className="bg-white border rounded-xl p-6 mt-8">
-        <h3 className="text-xl font-semibold">Dictionary Views</h3>
+        <h3 className="text-xl font-semibold">Classes/Students Overview</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Words this student looked up (12 total views)
+          Overview of classes managed by this teacher
         </p>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {dictionaryData.map((item) => (
-            <div
-              key={item.word}
-              className="border rounded-lg p-4 flex justify-between"
-            >
-              <div>
-                <p className="font-medium">{item.word}</p>
-                <p className="text-xs text-gray-500">From: {item.from}</p>
-              </div>
-              <p className="text-green-700 text-sm">{item.count} times</p>
-            </div>
-          ))}
+        <div className="text-center py-10 text-gray-500">
+          No additional data available for this teacher.
         </div>
-      </div>
-
-      {/* Recommended Stories */}
-      <h3 className="text-2xl font-semibold mt-10 mb-4">Recommended Story</h3>
-
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {stories.map((story, i) => (
-          <StoryCard key={i} {...story} />
-        ))}
       </div>
     </div>
   );

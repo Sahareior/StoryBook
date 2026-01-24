@@ -24,9 +24,24 @@ export const authApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    // === Admin Students Detail ===
     getSiteAdminStudentDetail: builder.query({
       query: (id) => ({
         url: `/site/admin/students/${id}/`,
+        method: "GET",
+      }),
+    }),
+    // === Admin Teachers Overview ===
+    getSiteAdminTeachersOverview: builder.query({
+      query: () => ({
+        url: "/site/admin/teachers/",
+        method: "GET",
+      }),
+    }),
+    // === Admin Teachers Detail ===
+    getSiteAdminTeacherDetail: builder.query({
+      query: (id) => ({
+        url: `/site/admin/teachers/${id}/`,
         method: "GET",
       }),
     }),
@@ -37,4 +52,6 @@ export const {
   useGetSiteOverviewQuery,
   useGetSiteAdminStudentsOverviewQuery,
   useGetSiteAdminStudentDetailQuery,
+  useGetSiteAdminTeachersOverviewQuery,
+  useGetSiteAdminTeacherDetailQuery,
 } = authApi;

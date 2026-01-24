@@ -25,7 +25,7 @@ import StudentDetail from "../components/Dashboard/TeacherPannel/Students/Studen
 import { StoryLibrary } from "../components/Dashboard/AdminPannel/StoryLibrary/StoryLibrary";
 import AdminStoryCreatorStudio from "../components/Dashboard/AdminPannel/StoryLibrary/StoryCreatorStudio";
 import Congratulations from "../pages/Auth/Congratulation";
-import StudentDetailsPage from "../components/Dashboard/AdminPannel/User/UserDetails";
+import UserDetailsPage from "../components/Dashboard/AdminPannel/User/UserDetails";
 import Chatbots from "../components/Dashboard/AdminPannel/chatbots/Chatbots";
 import Settings from "../components/Dashboard/AdminPannel/settings/Settings";
 import { UserManagement } from "../components/Dashboard/AdminPannel/User/User-Management";
@@ -111,8 +111,8 @@ path: "/achivement", element: <Achievement />
         element: <UserManagement/>,
       },
       {
-        path: "user-details",
-        element: <StudentDetailsPage />,
+        path: "user-details/:id",
+        element: <UserDetailsPage />,
       },
 
       // Teacher Dashboard

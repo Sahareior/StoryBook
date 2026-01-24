@@ -70,8 +70,7 @@ export default function StudentDetail() {
     return <div className="flex items-center gap-0.5">{stars}</div>;
   };
   const handleBack = () => {
-    //    naviagate(`/dashboard/teacher/students/${id}`);
-    navigate(`/dashboard/students`);
+    navigate(-1);
   };
 
   return (

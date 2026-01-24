@@ -91,9 +91,9 @@ export const UserManagement = () => {
             </>
           ) : (
             <>
-              <option value="A">Grade A</option>
-              <option value="B">Grade B</option>
-              <option value="C">Grade C</option>
+              <option value="3">Grade 3</option>
+              <option value="4">Grade 4</option>
+              <option value="5">Grade 5</option>
             </>
           )}
         </select>
