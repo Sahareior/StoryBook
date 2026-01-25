@@ -19,7 +19,6 @@ import TeacherDashboard from "../components/Dashboard/TeacherPannel/TeacherDashb
 import DashboardContent from "../utils/DashboardContent";
 import AdminDashboard from "../components/Dashboard/AdminPannel/AdminDashboard";
 import StudentManagement from "../components/Dashboard/TeacherPannel/Students/StudentManagement";
-import TeacherSettings from "../components/Dashboard/TeacherPannel/TeacherSettings/TeacherSettings";
 import Students from "../components/Dashboard/TeacherPannel/Students/Students";
 import StudentDetail from "../components/Dashboard/TeacherPannel/Students/StudentDetail";
 import { StoryLibrary } from "../components/Dashboard/AdminPannel/StoryLibrary/StoryLibrary";
@@ -31,6 +30,7 @@ import Settings from "../components/Dashboard/AdminPannel/settings/Settings";
 import { UserManagement } from "../components/Dashboard/AdminPannel/User/User-Management";
 import TermsAndConditions from "../pages/Terms&Policy/Terms";
 import PrivacyPolicy from "../pages/Terms&Policy/Privacy";
+import TeacherSettings from "../components/Dashboard/TeacherPannel/settings/Settings";
 
 
 
@@ -129,7 +129,7 @@ path: "/achivement", element: <Achievement />
         element: <StudentDetail></StudentDetail>,
       },
       {
-        path: "settings",
+        path: "teacher-settings",
         element: <TeacherSettings />,
       },
     ],

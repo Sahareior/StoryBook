@@ -11,10 +11,9 @@ const TeacherSidebar = ({ collapsed }) => {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const isActiveDashboard = location.pathname.startsWith("/dashboard/teacher");
-
-  const isActiveSettings = location.pathname.startsWith("/dashboard/settings");
-  const isActiveStudent = location.pathname.startsWith("/dashboard/student");
+  const isActiveDashboard = location.pathname === "/dashboard/teacher";
+  const isActiveSettings = location.pathname === "/dashboard/teacher-settings";
+  const isActiveStudent = location.pathname.startsWith("/dashboard/students");
 
   const handleLogout = () => {
     console.log("Teacher logout triggered");
@@ -94,7 +93,7 @@ const TeacherSidebar = ({ collapsed }) => {
 
           {/* Student Profile */}
           <NavLink
-            to="/dashboard/settings"
+            to="/dashboard/teacher-settings"
             className="flex items-center justify-between w-[280px]"
           >
             <div className="flex items-center justify-between w-[280px] font-medium p-2 pt-2">
