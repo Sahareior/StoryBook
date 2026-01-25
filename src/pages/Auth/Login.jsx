@@ -138,7 +138,7 @@ const Login = () => {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-gray-600 text-sm md:text-base normalFont">
+            {/* <p className="mt-6 text-center text-gray-600 text-sm md:text-base normalFont">
               Are you a parent or teacher?{" "}
               <a
                 href="/login"
@@ -146,7 +146,7 @@ const Login = () => {
               >
                 Click here
               </a>
-            </p>
+            </p> */}
           </div>
         </div>
       </div>

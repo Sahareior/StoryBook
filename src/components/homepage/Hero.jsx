@@ -31,7 +31,7 @@ const Hero = () => {
             >
               Sign In
             </button>
-            <button
+            {/* <button
               onClick={() => navigate("/signup")}
               style={{
                 background:
@@ -40,7 +40,7 @@ const Hero = () => {
               className="bg-white px-6 py-2 md:py-0 md:px-9 font-semibold rounded-3xl text-sm md:text-base headerFont"
             >
               Sign Up Free
-            </button>
+            </button> */}
           </div>
         </div>
         <div className="mt-10 md:mt-5 relative">

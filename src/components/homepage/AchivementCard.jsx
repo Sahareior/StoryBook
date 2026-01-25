@@ -149,14 +149,14 @@ const AchievementCard = () => {
 
       <div className="flex flex-col justify-center items-center py-8 lg:py-12 gap-5 lg:gap-7 bg-[#FFFFFF] p-6 lg:p-8 w-full lg:w-[83vw] mx-auto rounded-xl shadow-xl text-center">
         <h2 className="text-xl lg:text-2xl font-semibold headerFont">
-          Ready to Start Your Reading Adventure? 🚀
+          Ready to Start Your Reading Adventure?
         </h2>
         <p className="text-base lg:text-lg text-[#4A5565] normalFont">
-          Join thousands of kids learning to love reading and writing. Sign up
+          Join thousands of kids learning to love reading and writing. Sign in
           now and get started for FREE!
         </p>
 
-        <button
+        {/* <button
           onClick={() => navigate("/signup")}
           className="text-lg px-10 lg:px-5 text-white py-3 rounded-full headerFont"
           style={{
@@ -166,7 +166,7 @@ const AchievementCard = () => {
         >
           {" "}
           Sign Up Free!
-        </button>
+        </button> */}
       </div>
     </div>
   );

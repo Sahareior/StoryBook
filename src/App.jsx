@@ -32,9 +32,9 @@ function App() {
           >
             Start Reading Now!
           </button>
-          <p className="text-[#6A7282] normalFont">
+          {/* <p className="text-[#6A7282] normalFont">
             Sign up to unlock all stories
-          </p>
+          </p> */}
         </div>
       </div>
       <AboutCard />
