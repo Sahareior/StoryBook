@@ -278,6 +278,14 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Stories Library"],
     }),
+    // === Student Profile ===
+    getStudentProfile: builder.query({
+      query: () => ({
+        url: "/students/profile/",
+        method: "GET",
+      }),
+      providesTags: ["Profile"],
+    }),
   }),
 });
 export const {
@@ -314,4 +322,5 @@ export const {
   useGetTermsAndConditionsQuery,
   useGetPrivacyPolicyQuery,
   useGetStoriesLibraryQuery,
+  useGetStudentProfileQuery,
 } = authApi;
