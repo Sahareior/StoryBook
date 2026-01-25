@@ -28,7 +28,7 @@ const Otp = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // You can add OTP validation here if needed
-    navigate("/congratulations");
+    navigate("/reset-password");
   };
 
   return (
@@ -38,7 +38,7 @@ const Otp = () => {
         src={bgImg}
         alt="Background"
         className="fixed top-0 left-0 w-full h-full object-cover z-0"
-        style={{ pointerEvents: 'none', userSelect: 'none' }}
+        style={{ pointerEvents: "none", userSelect: "none" }}
       />
       {/* Overlay for opacity-50 */}
       <div className="fixed inset-0 bg-black opacity-50 z-10" />
@@ -51,7 +51,7 @@ const Otp = () => {
             onClick={() => navigate(-1)}
           >
             <ArrowLeft size={16} />
-            <p className="font-semibold text-base">Back to Home</p>
+            <p className="font-semibold text-base">Back</p>
           </button>
 
           <div className="px-4 py-8 md:px-8 md:py-10">

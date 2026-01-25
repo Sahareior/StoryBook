@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, BookOpen, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
@@ -64,6 +64,15 @@ const Login = () => {
       <div className="fixed inset-0 bg-black opacity-50 z-10" />
       <div className="flex items-center justify-center min-h-screen px-4 py-8 md:px-24 md:py-20 relative z-20">
         <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[524px]  overflow-hidden">
+          {/* Back Button */}
+          <button
+            type="button"
+            className="flex items-center gap-2 text-gray-600 text-sm px-4 pt-4 md:px-6 md:pt-6 hover:text-gray-800 transition"
+            onClick={() => navigate("/")}
+          >
+            <ArrowLeft size={16} />
+            <p className="font-semibold text-base">Back</p>
+          </button>
           <div className="p-6 sm:p-10 md:p-14">
             {/* Logo */}
             <div className="flex flex-col items-center justify-center gap-3 mb-6 md:mb-8">

@@ -4,7 +4,7 @@ import Signup from "../pages/Auth/Signup";
 import Login from "../pages/Auth/Login";
 import ForgotPassword from "../pages/Auth/Forgot";
 import Otp from "../pages/Auth/Otp";
-
+import ResetPassword from "../pages/Auth/ResetPassword";
 
 import DashboardHome from "../components/Dashboard/StudentDashboard/DashboardHome";
 import LibraryLists from "../components/Dashboard/StudentDashboard/_component/Library/LibraryLists";
@@ -32,8 +32,6 @@ import TermsAndConditions from "../pages/Terms&Policy/Terms";
 import PrivacyPolicy from "../pages/Terms&Policy/Privacy";
 import TeacherSettings from "../components/Dashboard/TeacherPannel/settings/Settings";
 
-
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -50,25 +48,30 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/forgot", element: <ForgotPassword /> },
   { path: "/otp", element: <Otp /> },
+  { path: "/reset-password", element: <ResetPassword /> },
   { path: "/congratulations", element: <Congratulations /> },
   { path: "/terms", element: <TermsAndConditions /> },
   { path: "/privacy", element: <PrivacyPolicy /> },
 
-
   {
-    path: "/student-dashboard", element: <DashboardHome />
+    path: "/student-dashboard",
+    element: <DashboardHome />,
   },
   {
-    path: "/library", element: <LibraryLists />
+    path: "/library",
+    element: <LibraryLists />,
   },
   {
-    path: "/:read-book", element: <ViewBook />
+    path: "/:read-book",
+    element: <ViewBook />,
   },
   {
-path: "/achivement", element: <Achievement />
+    path: "/achivement",
+    element: <Achievement />,
   },
   {
-    path:'/profile', element: <Profile />
+    path: "/profile",
+    element: <Profile />,
   },
 
   { path: "/story-creator", element: <StoryCreatorStudio /> },
@@ -87,16 +90,16 @@ path: "/achivement", element: <Achievement />
         element: <AdminDashboard />,
       },
       {
-        path: 'user-management',
-        element: <UserManagement />
+        path: "user-management",
+        element: <UserManagement />,
       },
       {
-        path:'ai-bot',
-        element: <Chatbots />
+        path: "ai-bot",
+        element: <Chatbots />,
       },
       {
-        path:'settings',
-        element: <Settings />
+        path: "settings",
+        element: <Settings />,
       },
       {
         path: "storyLibrary",
@@ -104,11 +107,11 @@ path: "/achivement", element: <Achievement />
       },
       {
         path: "admin-story-create",
-        element: <AdminStoryCreatorStudio/>,
+        element: <AdminStoryCreatorStudio />,
       },
       {
         path: "user",
-        element: <UserManagement/>,
+        element: <UserManagement />,
       },
       {
         path: "user-details/:id",
@@ -134,7 +137,6 @@ path: "/achivement", element: <Achievement />
       },
     ],
   },
-
 ]);
 
 export default router;

@@ -31,7 +31,7 @@ const ForgotPassword = () => {
             onClick={() => navigate(-1)}
           >
             <ArrowLeft size={16} />
-            <p className="font-semibold text-base">Back to Home</p>
+            <p className="font-semibold text-base">Back</p>
           </button>
 
           <div className="px-4 py-8 md:px-8 md:pt-6 md:pb-10">
