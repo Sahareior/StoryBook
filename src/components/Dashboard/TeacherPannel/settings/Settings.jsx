@@ -3,14 +3,25 @@ import PersonalInfo from "./_components/PersonalInfo";
 import Terms from "./_components/Terms";
 import Privacy from "./_components/Privacy";
 import {
-  useGetSiteAdminGeneralSettingsQuery,
-  useUpdateSiteAdminGeneralSettingsMutation,
+  useGetTeacherProfileQuery,
+  useUpdateTeacherProfileMutation,
+  useDeleteTeacherProfileMutation,
   useGetTeacherTermsAndConditionsQuery,
   useGetTeacherPrivacyPolicyQuery,
 } from "../../../../redux/api/authApi";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../../../redux/features/authSlice";
 
-const Header = ({ isEditing, onAction, isLoading, showButton }) => {
+const Header = ({
+  isEditing,
+  onAction,
+  onDelete,
+  isLoading,
+  isDeleting,
+  showButton,
+}) => {
   return (
     <div className="flex w-[80vw] mx-auto justify-between items-center">
       <div className="">
@@ -18,20 +29,29 @@ const Header = ({ isEditing, onAction, isLoading, showButton }) => {
           Settings
         </p>
         <p className="text-[16px] text-[#4A5565] normalFont">
-          Manage platform preferences and configurations
+          Manage your profile and platform preferences
         </p>
       </div>
       {showButton && (
-        <button
-          onClick={onAction}
-          disabled={isLoading}
-          className="px-8 py-2 rounded-2xl text-white font-medium hover:opacity-90 transition-opacity headerFont text-sm flex items-center justify-center min-w-[120px]"
-          style={{
-            background: "linear-gradient(90deg, #294637 0%, #95D4C4 100%)",
-          }}
-        >
-          {isLoading ? "Saving..." : isEditing ? "Save Changes" : "Edit"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={onAction}
+            disabled={isLoading || isDeleting}
+            className="px-8 py-2 rounded-2xl text-white font-medium hover:opacity-90 transition-opacity headerFont text-sm flex items-center justify-center min-w-[120px]"
+            style={{
+              background: "linear-gradient(90deg, #294637 0%, #95D4C4 100%)",
+            }}
+          >
+            {isLoading ? "Saving..." : isEditing ? "Save Changes" : "Edit"}
+          </button>
+          <button
+            onClick={onDelete}
+            disabled={isDeleting || isLoading}
+            className="px-6 py-2 rounded-2xl text-red-600 border border-red-200 font-medium hover:bg-red-50 transition-all headerFont text-sm flex items-center justify-center min-w-[120px]"
+          >
+            {isDeleting ? "Deleting..." : "Delete Profile"}
+          </button>
+        </div>
       )}
     </div>
   );
@@ -40,32 +60,42 @@ const Header = ({ isEditing, onAction, isLoading, showButton }) => {
 const TeacherSettings = () => {
   const [active, setActive] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // General Settings API
-  const { data: generalData, isLoading: isFetchingGeneral } =
-    useGetSiteAdminGeneralSettingsQuery();
-  const [updateGeneralSettings, { isLoading: isUpdatingGeneral }] =
-    useUpdateSiteAdminGeneralSettingsMutation();
+  // Teacher Profile API
+  const { data: profileData, isLoading: isFetchingProfile } =
+    useGetTeacherProfileQuery();
+  const [updateProfile, { isLoading: isUpdatingProfile }] =
+    useUpdateTeacherProfileMutation();
+  const [deleteProfile, { isLoading: isDeletingProfile }] =
+    useDeleteTeacherProfileMutation();
 
-  const [generalFormData, setGeneralFormData] = useState({
-    platform_name: "",
-    contact_email: "",
-    support_email: "",
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    username: "",
+    grade_level: "",
+    bio: "",
   });
 
   useEffect(() => {
-    if (generalData) {
-      setGeneralFormData({
-        platform_name: generalData.platform_name || "",
-        contact_email: generalData.contact_email || "",
-        support_email: generalData.support_email || "",
+    if (profileData) {
+      setFormData({
+        first_name: profileData.first_name || "",
+        last_name: profileData.last_name || "",
+        email: profileData.email || "",
+        username: profileData.username || "",
+        grade_level: profileData.grade_level || "",
+        bio: profileData.bio || "",
       });
     }
-  }, [generalData]);
+  }, [profileData]);
 
-  const handleGeneralChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setGeneralFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   // Terms & Conditions API
@@ -82,16 +112,68 @@ const TeacherSettings = () => {
       return;
     }
 
-    // If saving General settings
-    if (active === 0) {
-      try {
-        await updateGeneralSettings(generalFormData).unwrap();
-        toast.success("General settings updated successfully!");
-        setIsEditing(false);
-      } catch (err) {
-        toast.error(err?.data?.message || "Failed to update general settings");
-      }
+    try {
+      const response = await updateProfile({
+        first_name: formData.first_name,
+        bio: formData.bio,
+        grade_level: parseInt(formData.grade_level),
+      }).unwrap();
+
+      toast.success(response.message || "Profile updated successfully");
+      setIsEditing(false);
+    } catch (err) {
+      toast.error(
+        err?.data?.message || err?.data?.error || "Failed to update profile",
+      );
     }
+  };
+
+  const handleDeleteProfile = () => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-3 p-1">
+          <p className="text-sm font-medium text-[#1F3A2B] normalFont">
+            Are you sure you want to delete your profile? This action is
+            permanent.
+          </p>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="px-4 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors normalFont"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  const response = await deleteProfile().unwrap();
+                  toast.success(
+                    response.message || "Account deleted successfully",
+                  );
+                  // Reset/Clear everything and redirect
+                  dispatch(logout());
+                  navigate("/login");
+                } catch (err) {
+                  toast.error(
+                    err?.data?.message ||
+                      err?.data?.error ||
+                      "Failed to delete account",
+                  );
+                }
+              }}
+              className="px-4 py-1.5 text-xs font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors normalFont"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: 5000,
+        position: "top-center",
+      },
+    );
   };
 
   const tabOptions = ["General", "Terms & Conditions", "Privacy Policy"];
@@ -100,10 +182,10 @@ const TeacherSettings = () => {
     if (active === 0) {
       return (
         <PersonalInfo
-          data={generalFormData}
+          data={formData}
           isEditing={isEditing}
-          onChange={handleGeneralChange}
-          isLoading={isFetchingGeneral}
+          onChange={handleChange}
+          isLoading={isFetchingProfile}
         />
       );
     } else if (active === 1) {
@@ -113,7 +195,6 @@ const TeacherSettings = () => {
     }
   };
 
-  // When changing tabs, turn off editing mode
   const handleTabChange = (index) => {
     setActive(index);
     setIsEditing(false);
@@ -125,7 +206,9 @@ const TeacherSettings = () => {
         <Header
           isEditing={isEditing}
           onAction={handleAction}
-          isLoading={isUpdatingGeneral}
+          onDelete={handleDeleteProfile}
+          isLoading={isUpdatingProfile}
+          isDeleting={isDeletingProfile}
           showButton={active === 0}
         />
       </div>

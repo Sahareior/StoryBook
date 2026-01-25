@@ -200,6 +200,31 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Privacy Policy"],
     }),
+    // === Teacher Profile ===
+    getTeacherProfile: builder.query({
+      query: () => ({
+        url: "/teachers/my-profile/",
+        method: "GET",
+      }),
+      providesTags: ["Profile"],
+    }),
+    // === Update Teacher Profile ===
+    updateTeacherProfile: builder.mutation({
+      query: (data) => ({
+        url: "/teachers/my-profile/",
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+    // === Delete Teacher Profile ===
+    deleteTeacherProfile: builder.mutation({
+      query: () => ({
+        url: "/teachers/my-profile/",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Profile"],
+    }),
   }),
 });
 export const {
@@ -227,4 +252,7 @@ export const {
   useDeleteStudentMutation,
   useGetTeacherTermsAndConditionsQuery,
   useGetTeacherPrivacyPolicyQuery,
+  useGetTeacherProfileQuery,
+  useUpdateTeacherProfileMutation,
+  useDeleteTeacherProfileMutation,
 } = authApi;
