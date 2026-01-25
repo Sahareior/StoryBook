@@ -2,14 +2,27 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
 import bgImg from "../../assets/bg.png";
+import { useForgetPasswordMutation } from "../../redux/api/authApi";
+import toast from "react-hot-toast";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+  const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can add your API call here if needed
-    navigate("/otp");
+    try {
+      const response = await forgetPassword({ email }).unwrap();
+      toast.success(response.message || "OTP sent to your email.");
+      navigate("/otp", { state: { email } });
+    } catch (err) {
+      toast.error(
+        err?.data?.message ||
+          err?.data?.error ||
+          "Failed to send OTP. Please try again.",
+      );
+    }
   };
   return (
     <div className="relative w-full min-h-screen">
@@ -18,7 +31,7 @@ const ForgotPassword = () => {
         src={bgImg}
         alt="Background"
         className="fixed top-0 left-0 w-full h-full object-cover z-0"
-        style={{ pointerEvents: 'none', userSelect: 'none' }}
+        style={{ pointerEvents: "none", userSelect: "none" }}
       />
       {/* Overlay for opacity-50 */}
       <div className="fixed inset-0 bg-black opacity-50 z-10" />
@@ -80,9 +93,10 @@ const ForgotPassword = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full pb-16 headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-base md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg"
+                disabled={isLoading}
+                className="w-full headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-base md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg disabled:opacity-50"
               >
-                Send
+                {isLoading ? "Sending..." : "Send"}
               </button>
             </form>
           </div>

@@ -1,12 +1,19 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CircleCheckBig } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, CircleCheckBig, Mail } from "lucide-react";
 import bgImg from "../../assets/bg.png";
+import { useOtpVerifyMutation } from "../../redux/api/authApi";
+import toast from "react-hot-toast";
 
 const Otp = () => {
-  const [otp, setOtp] = useState(new Array(4).fill(""));
+  const [otp, setOtp] = useState(new Array(6).fill(""));
   const inputRefs = useRef([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get email from previous page state OR allow manual entry if missing
+  const [email, setEmail] = useState(location.state?.email || "");
+  const [otpVerify, { isLoading }] = useOtpVerifyMutation();
 
   const handleChange = (element, index) => {
     if (isNaN(element.value)) return false;
@@ -14,7 +21,7 @@ const Otp = () => {
     setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
 
     // Focus next input
-    if (element.value !== "" && index < 3) {
+    if (element.value !== "" && index < 5) {
       inputRefs.current[index + 1].focus();
     }
   };
@@ -25,10 +32,36 @@ const Otp = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can add OTP validation here if needed
-    navigate("/reset-password");
+
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    const otpValue = otp.join("");
+    if (otpValue.length < 6) {
+      toast.error("Please enter the full 6-digit OTP.");
+      return;
+    }
+
+    try {
+      const response = await otpVerify({
+        email,
+        otp: otpValue,
+      }).unwrap();
+
+      toast.success(response.message || "OTP verified successfully.");
+      // Pass email and otp to reset-password page
+      navigate("/reset-password", { state: { email, otp: otpValue } });
+    } catch (err) {
+      toast.error(
+        err?.data?.message ||
+          err?.data?.error ||
+          "Invalid OTP. Please try again.",
+      );
+    }
   };
 
   return (
@@ -62,23 +95,47 @@ const Otp = () => {
               </div>
               {/* Title */}
               <h1 className="text-2xl headerFont md:text-2xl font-bold text-[#1E2939] mt-6 md:mt-10 text-center">
-                Email Sent!
+                OTP Verification
               </h1>
             </div>
 
             <div className="bg-gradient-to-b from-[#E6F3FF] to-[#F0FFF4] max-w-sm mx-auto border-2 border-[#87CEEB4D] rounded-2xl p-4 md:p-6 mb-6 flex items-center justify-center">
               {/* Instruction */}
               <p className="normalFont text-center text-[#364153] font-normal text-sm md:text-base">
-                We've sent a password reset OTP to your email address.
+                {location.state?.email
+                  ? `Enter the 6-digit code sent to ${email}`
+                  : "Please enter your email and the 6-digit OTP code."}
               </p>
             </div>
+
             <form
               onSubmit={handleSubmit}
               className="space-y-6 max-w-sm mx-auto"
             >
+              {/* Email Input (shows only if not passed from previous page) */}
+              {!location.state?.email && (
+                <div className="relative">
+                  <label className="flex headerFont items-center gap-2 font-bold text-xs md:text-sm text-gray-700 mb-2">
+                    <Mail size={16} className="text-teal-600" />
+                    Your Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 md:px-6 md:py-4 border border-gray-300 rounded-2xl text-base font-normal focus:outline-none focus:ring-2 focus:ring-teal-500 transition outline-none"
+                    required
+                  />
+                </div>
+              )}
+
               {/* OTP Input */}
               <div>
-                <div className="flex gap-2 md:gap-4 justify-center">
+                <label className="block text-center font-bold text-gray-700 text-xs md:text-sm headerFont mb-4">
+                  Enter 6-Digit Code
+                </label>
+                <div className="flex gap-2 justify-center">
                   {otp.map((data, index) => (
                     <input
                       key={index}
@@ -89,21 +146,23 @@ const Otp = () => {
                       onChange={(e) => handleChange(e.target, index)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       onFocus={(e) => e.target.select()}
-                      className={`w-14 h-12 md:w-24 md:h-14 rounded-2xl text-lg font-semibold text-center outline-none transition-all ${
+                      className={`w-10 h-12 md:w-12 md:h-14 rounded-xl text-lg font-semibold text-center outline-none transition-all ${
                         data
-                          ? "bg-teal-500 text-white shadow-lg scale-110"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300 focus:bg-teal-500 focus:text-white focus:shadow-lg focus:scale-110"
+                          ? "bg-teal-500 text-white shadow-lg scale-105"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300 focus:bg-teal-500 focus:text-white focus:shadow-lg focus:scale-105"
                       }`}
                     />
                   ))}
                 </div>
               </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-xs md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg"
+                disabled={isLoading}
+                className="w-full headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-xs md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg disabled:opacity-50"
               >
-                Confirm OTP
+                {isLoading ? "Verifying..." : "Confirm OTP"}
               </button>
             </form>
           </div>

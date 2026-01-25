@@ -1,29 +1,60 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, KeyRound, Eye, EyeOff } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, KeyRound, Eye, EyeOff, Mail, Hash } from "lucide-react";
 import bgImg from "../../assets/bg.png";
 import toast from "react-hot-toast";
+import { useResetPasswordMutation } from "../../redux/api/authApi";
 
 const ResetPassword = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get data from location state (from OTP page)
+  const [email, setEmail] = useState(location.state?.email || "");
+  const [otp, setOtp] = useState(location.state?.otp || "");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email || !otp) {
+      toast.error("Email and OTP are required!");
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match!");
       return;
     }
+
     if (newPassword.length < 6) {
       toast.error("Password must be at least 6 characters!");
       return;
     }
-    // Simulate API call
-    toast.success("Password reset successfully!");
-    navigate("/congratulations");
+
+    try {
+      const response = await resetPassword({
+        email,
+        otp: parseInt(otp),
+        new_password: newPassword,
+        confirm_password: confirmPassword,
+      }).unwrap();
+
+      toast.success(response.message || "Password reset successfully.");
+      navigate("/congratulations");
+    } catch (err) {
+      toast.error(
+        err?.data?.message ||
+          err?.data?.error ||
+          "Failed to reset password. Please try again.",
+      );
+    }
   };
 
   return (
@@ -64,14 +95,56 @@ const ResetPassword = () => {
             <div className="bg-gradient-to-b from-[#E6F3FF] to-[#F0FFF4] max-w-sm mx-auto border-2 border-[#87CEEB4D] rounded-2xl p-4 md:p-6 mb-6 flex items-center justify-center">
               {/* Instruction */}
               <p className="normalFont text-center text-[#364153] font-normal text-sm md:text-base">
-                Enter your new password to secure your account.
+                Secure your account with a new password.
               </p>
             </div>
 
             <form
               onSubmit={handleSubmit}
-              className="space-y-6 max-w-sm mx-auto"
+              className="space-y-4 max-w-sm mx-auto"
             >
+              {/* Email - Hidden or Read-only if needed, but adding as per instruction to add fields */}
+              <div>
+                <label className="flex headerFont items-center gap-2 font-bold text-xs md:text-sm text-gray-700 mb-2">
+                  <Mail size={16} className="text-teal-600" />
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  readOnly={!!location.state?.email}
+                  className={`w-full normalFont px-4 py-3 md:px-6 md:py-4 text-sm border rounded-2xl outline-none transition-all ${
+                    location.state?.email
+                      ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                      : "focus:ring-2 focus:ring-teal-500"
+                  }`}
+                  required
+                />
+              </div>
+
+              {/* OTP */}
+              <div>
+                <label className="flex headerFont items-center gap-2 font-bold text-xs md:text-sm text-gray-700 mb-2">
+                  <Hash size={16} className="text-teal-600" />
+                  OTP Code
+                </label>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter 6-digit OTP"
+                  readOnly={!!location.state?.otp}
+                  className={`w-full normalFont px-4 py-3 md:px-6 md:py-4 text-sm border rounded-2xl outline-none transition-all ${
+                    location.state?.otp
+                      ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                      : "focus:ring-2 focus:ring-teal-500"
+                  }`}
+                  required
+                />
+              </div>
+
               {/* New Password */}
               <div className="relative">
                 <label className="block mb-2 font-bold text-gray-700 text-xs md:text-sm headerFont">
@@ -123,9 +196,10 @@ const ResetPassword = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-xs md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all shadow-lg mt-4"
+                disabled={isLoading}
+                className="w-full headerFont bg-gradient-to-r from-[#98D8C8] to-[#1F3A2B] text-white font-bold text-xs md:text-sm py-3 md:py-4 rounded-2xl hover:opacity-90 transition-all shadow-lg mt-4 disabled:opacity-50"
               >
-                Reset Password
+                {isLoading ? "Resetting..." : "Reset Password"}
               </button>
             </form>
           </div>

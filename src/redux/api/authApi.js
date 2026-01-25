@@ -225,6 +225,35 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Profile"],
     }),
+
+    // Student Panel
+    // === Forget Password ===
+    forgetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/students/forgot-password/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Forget Password"],
+    }), 
+    // === OTP ===
+    otpVerify: builder.mutation({
+      query: (data) => ({
+        url: "/students/verify-otp/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["OTP"],
+    }), 
+    // === Reset Password ===
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/students/reset-password/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Reset Password"],
+    }),
   }),
 });
 export const {
@@ -255,4 +284,7 @@ export const {
   useGetTeacherProfileQuery,
   useUpdateTeacherProfileMutation,
   useDeleteTeacherProfileMutation,
+  useForgetPasswordMutation,
+  useOtpVerifyMutation,
+  useResetPasswordMutation,
 } = authApi;
