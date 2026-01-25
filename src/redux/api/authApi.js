@@ -254,6 +254,22 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Reset Password"],
     }),
+    // === Terms & Conditions ===
+    getTermsAndConditions: builder.query({
+      query: () => ({
+        url: "/students/get/terms-and-conditions/",
+        method: "GET",
+      }),
+      providesTags: ["Terms & Conditions"],
+    }),
+    // === Privacy Policy ===
+    getPrivacyPolicy: builder.query({
+      query: () => ({
+        url: "/students/get/privacy-and-policy/",
+        method: "GET",
+      }),
+      providesTags: ["Privacy Policy"],
+    }),
   }),
 });
 export const {
@@ -287,4 +303,6 @@ export const {
   useForgetPasswordMutation,
   useOtpVerifyMutation,
   useResetPasswordMutation,
+  useGetTermsAndConditionsQuery,
+  useGetPrivacyPolicyQuery,
 } = authApi;
