@@ -5,14 +5,12 @@ import Privacy from "./_components/Privacy";
 import {
   useGetSiteAdminGeneralSettingsQuery,
   useUpdateSiteAdminGeneralSettingsMutation,
-  useGetSiteAdminTermsAndConditionsQuery,
-  useUpdateSiteAdminTermsAndConditionsMutation,
-  useGetSiteAdminPrivacyPolicyQuery,
-  useUpdateSiteAdminPrivacyPolicyMutation,
+  useGetTeacherTermsAndConditionsQuery,
+  useGetTeacherPrivacyPolicyQuery,
 } from "../../../../redux/api/authApi";
 import toast from "react-hot-toast";
 
-const Header = ({ isEditing, onAction, isLoading }) => {
+const Header = ({ isEditing, onAction, isLoading, showButton }) => {
   return (
     <div className="flex w-[80vw] mx-auto justify-between items-center">
       <div className="">
@@ -23,16 +21,18 @@ const Header = ({ isEditing, onAction, isLoading }) => {
           Manage platform preferences and configurations
         </p>
       </div>
-      <button
-        onClick={onAction}
-        disabled={isLoading}
-        className="px-8 py-2 rounded-2xl text-white font-medium hover:opacity-90 transition-opacity headerFont text-sm flex items-center justify-center min-w-[120px]"
-        style={{
-          background: "linear-gradient(90deg, #294637 0%, #95D4C4 100%)",
-        }}
-      >
-        {isLoading ? "Saving..." : isEditing ? "Save Changes" : "Edit"}
-      </button>
+      {showButton && (
+        <button
+          onClick={onAction}
+          disabled={isLoading}
+          className="px-8 py-2 rounded-2xl text-white font-medium hover:opacity-90 transition-opacity headerFont text-sm flex items-center justify-center min-w-[120px]"
+          style={{
+            background: "linear-gradient(90deg, #294637 0%, #95D4C4 100%)",
+          }}
+        >
+          {isLoading ? "Saving..." : isEditing ? "Save Changes" : "Edit"}
+        </button>
+      )}
     </div>
   );
 };
@@ -70,47 +70,11 @@ const TeacherSettings = () => {
 
   // Terms & Conditions API
   const { data: termsData, isLoading: isFetchingTerms } =
-    useGetSiteAdminTermsAndConditionsQuery();
-  const [updateTerms, { isLoading: isUpdatingTerms }] =
-    useUpdateSiteAdminTermsAndConditionsMutation();
-
-  const [termsFormData, setTermsFormData] = useState({
-    content: "",
-  });
-
-  useEffect(() => {
-    if (termsData) {
-      setTermsFormData({
-        content: termsData.content || "",
-      });
-    }
-  }, [termsData]);
-
-  const handleTermsChange = (newContent) => {
-    setTermsFormData({ content: newContent });
-  };
+    useGetTeacherTermsAndConditionsQuery();
 
   // Privacy Policy API
   const { data: privacyData, isLoading: isFetchingPrivacy } =
-    useGetSiteAdminPrivacyPolicyQuery();
-  const [updatePrivacy, { isLoading: isUpdatingPrivacy }] =
-    useUpdateSiteAdminPrivacyPolicyMutation();
-
-  const [privacyFormData, setPrivacyFormData] = useState({
-    content: "",
-  });
-
-  useEffect(() => {
-    if (privacyData) {
-      setPrivacyFormData({
-        content: privacyData.content || "",
-      });
-    }
-  }, [privacyData]);
-
-  const handlePrivacyChange = (newContent) => {
-    setPrivacyFormData({ content: newContent });
-  };
+    useGetTeacherPrivacyPolicyQuery();
 
   const handleAction = async () => {
     if (!isEditing) {
@@ -118,7 +82,7 @@ const TeacherSettings = () => {
       return;
     }
 
-    // If saving
+    // If saving General settings
     if (active === 0) {
       try {
         await updateGeneralSettings(generalFormData).unwrap();
@@ -126,24 +90,6 @@ const TeacherSettings = () => {
         setIsEditing(false);
       } catch (err) {
         toast.error(err?.data?.message || "Failed to update general settings");
-      }
-    } else if (active === 1) {
-      try {
-        await updateTerms(termsFormData).unwrap();
-        toast.success("Terms & Conditions updated successfully!");
-        setIsEditing(false);
-      } catch (err) {
-        toast.error(
-          err?.data?.message || "Failed to update terms & conditions",
-        );
-      }
-    } else if (active === 2) {
-      try {
-        await updatePrivacy(privacyFormData).unwrap();
-        toast.success("Privacy Policy updated successfully!");
-        setIsEditing(false);
-      } catch (err) {
-        toast.error(err?.data?.message || "Failed to update privacy policy");
       }
     }
   };
@@ -161,23 +107,9 @@ const TeacherSettings = () => {
         />
       );
     } else if (active === 1) {
-      return (
-        <Terms
-          data={termsFormData}
-          isEditing={isEditing}
-          onChange={handleTermsChange}
-          isLoading={isFetchingTerms}
-        />
-      );
+      return <Terms data={termsData} isLoading={isFetchingTerms} />;
     } else {
-      return (
-        <Privacy
-          data={privacyFormData}
-          isEditing={isEditing}
-          onChange={handlePrivacyChange}
-          isLoading={isFetchingPrivacy}
-        />
-      );
+      return <Privacy data={privacyData} isLoading={isFetchingPrivacy} />;
     }
   };
 
@@ -193,7 +125,8 @@ const TeacherSettings = () => {
         <Header
           isEditing={isEditing}
           onAction={handleAction}
-          isLoading={isUpdatingGeneral || isUpdatingTerms || isUpdatingPrivacy}
+          isLoading={isUpdatingGeneral}
+          showButton={active === 0}
         />
       </div>
 

@@ -1,7 +1,7 @@
 import React from "react";
 import EditSection from "../../editor/EditSection";
 
-const Terms = ({ data, isEditing, onChange, isLoading }) => {
+const Terms = ({ data, isLoading }) => {
   if (isLoading)
     return (
       <div className="p-10 text-center">Loading terms & conditions...</div>
@@ -9,7 +9,7 @@ const Terms = ({ data, isEditing, onChange, isLoading }) => {
 
   return (
     <div>
-      <EditSection data={data} isEditing={isEditing} onChange={onChange} />
+      <EditSection data={data} />
     </div>
   );
 };

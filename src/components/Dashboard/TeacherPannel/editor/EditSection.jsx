@@ -1,13 +1,7 @@
-import React, { useRef, useState, useEffect } from "react";
-import Editor from "./Editor";
+import React from "react";
 
-const EditSection = ({ data, isEditing, onChange }) => {
-  const [range, setRange] = useState();
-  const [readOnly, setReadOnly] = useState(true);
-
-  const quillRef = useRef(null);
-
-  // Extract the actual content from the data prop
+const EditSection = ({ data }) => {
+  // Extract the actual HTML content from the data prop
   const contentValue =
     typeof data === "object" && data.content
       ? data.content
@@ -15,42 +9,25 @@ const EditSection = ({ data, isEditing, onChange }) => {
         ? data
         : "";
 
-  // Sync internal readOnly with parent isEditing
-  useEffect(() => {
-    setReadOnly(!isEditing);
-  }, [isEditing]);
-
-  // Sync internal quill content with external data
-  useEffect(() => {
-    if (quillRef.current && contentValue !== undefined) {
-      if (quillRef.current.root.innerHTML !== contentValue) {
-        quillRef.current.root.innerHTML = contentValue;
-      }
-    }
-  }, [contentValue]);
-
-  const handleEditorChange = (delta, oldDelta, source) => {
-    if (source === "user" && onChange) {
-      const content = quillRef.current?.root.innerHTML || "";
-      onChange(content);
-    }
-  };
-
   return (
     <div
-      className="flex bg-white flex-col gap-4 p-3 relative normalFont"
+      className="flex bg-white flex-col gap-6 p-8 relative normalFont overflow-y-auto"
       style={{
         minHeight: "500px",
         boxShadow: "0px 0px 10px 0px #0000001A",
+        borderRadius: "12px",
       }}
     >
-      <Editor
-        ref={quillRef}
-        readOnly={readOnly}
-        defaultValue={contentValue}
-        onSelectionChange={setRange}
-        onTextChange={handleEditorChange}
+      <div
+        className="prose prose-sm max-w-none text-[#1F2937] leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: contentValue }}
       />
+
+      {!contentValue && (
+        <div className="flex items-center justify-center h-full text-gray-400">
+          No content available to display.
+        </div>
+      )}
     </div>
   );
 };

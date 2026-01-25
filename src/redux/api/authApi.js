@@ -184,6 +184,22 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Students"],
     }),
+    // === Teacher Terms & Conditions ===
+    getTeacherTermsAndConditions: builder.query({
+      query: () => ({
+        url: "/teachers/get/terms-and-conditions/",
+        method: "GET",
+      }),
+      providesTags: ["Terms & Conditions"],
+    }),
+    // === Teacher Privacy Policy ===
+    getTeacherPrivacyPolicy: builder.query({
+      query: () => ({
+        url: "/teachers/get/privacy-and-policy/",
+        method: "GET",
+      }),
+      providesTags: ["Privacy Policy"],
+    }),
   }),
 });
 export const {
@@ -209,4 +225,6 @@ export const {
   useGetStudentDetailQuery,
   useUpdateStudentMutation,
   useDeleteStudentMutation,
+  useGetTeacherTermsAndConditionsQuery,
+  useGetTeacherPrivacyPolicyQuery,
 } = authApi;
