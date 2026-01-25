@@ -270,6 +270,14 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Privacy Policy"],
     }),
+    // === Stories Library ===
+    getStoriesLibrary: builder.query({
+      query: () => ({
+        url: "/stories/library/",
+        method: "GET",
+      }),
+      providesTags: ["Stories Library"],
+    }),
   }),
 });
 export const {
@@ -305,4 +313,5 @@ export const {
   useResetPasswordMutation,
   useGetTermsAndConditionsQuery,
   useGetPrivacyPolicyQuery,
+  useGetStoriesLibraryQuery,
 } = authApi;
