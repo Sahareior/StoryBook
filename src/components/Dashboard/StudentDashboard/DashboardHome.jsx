@@ -5,9 +5,19 @@ import { FaBook, FaPenNib, FaTrophy, FaUser } from "react-icons/fa";
 import { Link } from "react-router";
 import { FaArrowRight, FaBell } from "react-icons/fa6";
 import Reusable_Modal from "../../reusable_components/Reusable_Modal";
+import {
+  useGetContinueReadingQuery,
+  useGetDashboardStatsQuery,
+} from "../../../redux/api/authApi";
 
 const DashboardHome = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: continueReadingData, isLoading } = useGetContinueReadingQuery();
+  const { data: statsData } = useGetDashboardStatsQuery();
+
+  console.log("continueReadingData", continueReadingData);
+  console.log("statsData", statsData);
+
   const quickActions = [
     {
       title: "Library",
@@ -41,51 +51,31 @@ const DashboardHome = () => {
 
   const stats = [
     {
-      value: "12",
-      label: "Books Read",
+      value: statsData?.edited_totday || "0",
+      label: "Edited Today",
       borderColor: "#FFE87C4D",
       textColor: "#87CEEB",
       nestedLocation: "bookmarks",
     },
     {
-      value: "248",
-      label: "New Words",
+      value: statsData?.total_Stories || "0",
+      label: "Total Stories",
       borderColor: "#98D8C84D",
       textColor: "#98D8C8",
       nestedLocation: "wordCount",
     },
     {
-      value: "4",
-      label: "Reading Level",
+      value: statsData?.total_page || "0",
+      label: "Total Pages",
       borderColor: "#FFB6C14D",
       textColor: "#FFB6C1",
       nestedLocation: "readingLevel",
     },
   ];
 
-  const recentStories = [
-    {
-      id: 1,
-      title: "Demo Story",
-      progress: 48,
-      image:
-        "https://plus.unsplash.com/premium_photo-1687428554400-3ebabab7de29?q=80&w=689&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 2,
-      title: "Demo Story",
-      progress: 48,
-      image:
-        "https://plus.unsplash.com/premium_photo-1687428554400-3ebabab7de29?q=80&w=689&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 3,
-      title: "Demo Story",
-      progress: 48,
-      image:
-        "https://plus.unsplash.com/premium_photo-1687428554400-3ebabab7de29?q=80&w=689&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-  ];
+  const readingList = continueReadingData?.reading_list || [];
+  const mainStory = readingList[0];
+  const recentStories = readingList.slice(0, 3);
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-sky-50 to-white">
@@ -102,25 +92,48 @@ const DashboardHome = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Continue Reading */}
           <div className="lg:col-span-2">
-            <ContinueReadingCard
-              title="The Magical Forest"
-              progress={45}
-              image="https://plus.unsplash.com/premium_photo-1687428554400-3ebabab7de29?q=80&w=689&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            />
+            {isLoading ? (
+              <div className="h-64 bg-white rounded-2xl animate-pulse flex items-center justify-center">
+                <p className="text-gray-400">Loading stories...</p>
+              </div>
+            ) : mainStory ? (
+              <ContinueReadingCard
+                id={mainStory.story_id}
+                title={mainStory.title}
+                progress={parseFloat(mainStory.completion_percentage)}
+                image={mainStory.cover_image}
+              />
+            ) : (
+              <div className="h-52 bg-white rounded-2xl border-4 border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-6">
+                <GiBookshelf size={40} className="text-gray-300 mb-2" />
+                <p className="text-gray-500 headerFont">
+                  No stories in progress yet.
+                </p>
+                <Link
+                  to="/library"
+                  className="text-teal-600 text-sm underline mt-1"
+                >
+                  Browse library
+                </Link>
+              </div>
+            )}
 
             {/* Recent Stories Section */}
-            <div className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {recentStories.map((story) => (
-                  <RecentStoryCard
-                    key={story.id}
-                    title={story.title}
-                    progress={story.progress}
-                    image={story.image}
-                  />
-                ))}
+            {recentStories.length > 0 && (
+              <div className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {recentStories.map((story) => (
+                    <RecentStoryCard
+                      key={story.story_id}
+                      id={story.story_id}
+                      title={story.title}
+                      progress={parseFloat(story.completion_percentage)}
+                      image={story.cover_image}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -164,7 +177,7 @@ const DashboardHome = () => {
 
 /* ------------------ Internal Components ------------------ */
 
-const ContinueReadingCard = ({ title, progress, image }) => (
+const ContinueReadingCard = ({ id, title, progress, image }) => (
   <div>
     <div className="lg:col-span-2 bg-white border-[#87CEEB4D]/40 border-4 rounded-2xl shadow-xl p-4 md:p-6 flex flex-col md:flex-row gap-6 md:gap-0">
       <div className="w-full md:w-auto">
@@ -173,7 +186,10 @@ const ContinueReadingCard = ({ title, progress, image }) => (
           Reading
         </p>
         <img
-          src={image}
+          src={
+            image ||
+            "https://ih1.redbubble.net/image.1119561633.3087/flat,750x,075,f-pad,750x1000,f8f8f8.jpg"
+          }
           alt={title}
           className="w-full md:w-48 h-[200px] object-cover rounded-xl shadow"
         />
@@ -191,7 +207,7 @@ const ContinueReadingCard = ({ title, progress, image }) => (
           <ProgressBar value={progress} />
         </div>
 
-        <Link to="/34">
+        <Link to={`/${id}`} state={{ title }}>
           <button
             className="mt-6 md:mt-9 inline-flex items-center justify-center gap-2 rounded-full px-8 md:px-14 py-3 text-xs headerFont font-medium text-white hover:opacity-90 transition w-full md:w-auto"
             style={{
@@ -207,25 +223,32 @@ const ContinueReadingCard = ({ title, progress, image }) => (
   </div>
 );
 
-const RecentStoryCard = ({ title, progress, image }) => (
+const RecentStoryCard = ({ id, title, progress, image }) => (
   <div className="bg-white rounded-xl shadow-sm border-2 border-[#87CEEB4D] p-4 hover:shadow-md transition-shadow">
     <div className="flex gap-3">
       <img
         className="w-16 h-16 object-cover rounded-lg"
-        src={image}
+        src={
+          image ||
+          "https://ih1.redbubble.net/image.1119561633.3087/flat,750x,075,f-pad,750x1000,f8f8f8.jpg"
+        }
         alt={title}
       />
       <div className="flex-1">
-        <h3 className="font-semibold text-gray-800 headerFont text-xs">{title}</h3>
-        <p className="text-xs text-gray-500 mt-1 normalFont">Your Progress {progress}%</p>
-        <Link to="/33">
+        <h3 className="font-semibold text-gray-800 headerFont text-[10px] truncate w-24">
+          {title}
+        </h3>
+        <p className="text-[10px] text-gray-500 mt-1 normalFont">
+          Your Progress {progress}%
+        </p>
+        <Link to={`/${id}`} state={{ title }}>
           <button
-            className="mt-2 headerFont flex items-center gap-1 text-xs font-medium text-white px-4 py-1 rounded-3xl hover:text-[#98D8C8] transition"
+            className="mt-2 headerFont flex items-center gap-1 text-[10px] font-medium text-white px-4 py-1 rounded-3xl hover:text-teal-200 transition"
             style={{
               background: "linear-gradient(90deg, #213C2D 0%, #98D8C8 99.91%)",
             }}
           >
-            Read <FaArrowRight size={12} />
+            Read <FaArrowRight size={10} />
           </button>
         </Link>
       </div>
@@ -269,8 +292,8 @@ const StatCard = ({ value, label, borderColor, textColor, nestedLocation }) => {
 
   return (
     <div
-      onClick={() => setIsModalOpen(true)}
-      className="rounded-2xl p-6 text-center shadow-sm border-4 bg-white"
+      // onClick={() => setIsModalOpen(true)}
+      className="rounded-2xl p-6 text-center shadow-sm border-4 bg-white cursor-pointer hover:border-gray-200 transition-colors"
       style={{
         borderColor: borderColor,
         color: textColor,

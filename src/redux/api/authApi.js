@@ -303,6 +303,22 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Profile"],
     }),
+    // === Continue Reading ===
+    getContinueReading: builder.query({
+      query: () => ({
+        url: "/stories/continue-reading/",
+        method: "GET",
+      }),
+      providesTags: ["Continue Reading"],
+    }),
+    // === Dashboard Stats ===
+    getDashboardStats: builder.query({
+      query: () => ({
+        url: "/students/my-stories/stats/",
+        method: "GET",
+      }),
+      providesTags: ["Dashboard Stats"],
+    }),
   }),
 });
 export const {
@@ -342,4 +358,6 @@ export const {
   useGetReadStorySingleQuery,
   useGetStudentProfileQuery,
   useUpdateStudentProfileMutation,
+  useGetContinueReadingQuery,
+  useGetDashboardStatsQuery,
 } = authApi;
