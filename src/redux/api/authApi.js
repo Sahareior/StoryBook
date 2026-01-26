@@ -286,6 +286,15 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Profile"],
     }),
+    // === Update Profile ===
+    updateStudentProfile: builder.mutation({
+      query: (data) => ({
+        url: "/students/profile/",
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
   }),
 });
 export const {
@@ -323,4 +332,5 @@ export const {
   useGetPrivacyPolicyQuery,
   useGetStoriesLibraryQuery,
   useGetStudentProfileQuery,
+  useUpdateStudentProfileMutation,
 } = authApi;
