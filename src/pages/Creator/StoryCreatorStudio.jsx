@@ -19,6 +19,11 @@ import {
 import owlAnimation from "../../assets/owl2.json";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
+import {
+  useCreateStoryMutation,
+  useOwlbertChatMutation,
+} from "../../redux/api/authApi";
+import { toast } from "react-hot-toast";
 
 export default function StoryCreatorStudio() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -32,7 +37,7 @@ export default function StoryCreatorStudio() {
     const file = e.target.files[0];
     if (!file) return;
     const isValidType = ["image/png", "image/jpeg", "image/jpg"].includes(
-      file.type
+      file.type,
     );
     if (!isValidType) {
       alert("Only PNG and JPG files are allowed.");
@@ -57,7 +62,7 @@ export default function StoryCreatorStudio() {
       sender: "ai",
     },
   ]);
-  const [savedStories, setSavedStories] = useState([
+  const [savedStories, setSavedStories] = useState(() => [
     {
       id: 1,
       title: "The Rainbow Adventure",
@@ -69,6 +74,9 @@ export default function StoryCreatorStudio() {
       timestamp: Date.now() - 432000000,
     },
   ]);
+
+  const [createStory, { isLoading: isSaving }] = useCreateStoryMutation();
+  const [owlbertChat, { isLoading: isChatting }] = useOwlbertChatMutation();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showShareToast, setShowShareToast] = useState(false);
@@ -87,37 +95,39 @@ export default function StoryCreatorStudio() {
     "How should my story end?",
   ];
 
-  const handleSendMessage = (text) => {
-    if (!text.trim()) return;
+  const handleSendMessage = async (text) => {
+    if (!text.trim() || isChatting) return;
 
-    const newMsg = { id: messageIdRef.current++, text: text, sender: "user" };
-    setMessages((prev) => [...prev, newMsg]);
+    const userMsg = { id: messageIdRef.current++, text: text, sender: "user" };
+    setMessages((prev) => [...prev, userMsg]);
     setChatInput("");
-    setTimeout(scrollToBottom, 100);
+    setTimeout(scrollToBottom, 50);
 
-    setTimeout(() => {
-      let reply = "That sounds wonderful! Tell me more about it.";
-      const lowerText = text.toLowerCase();
-      if (lowerText.includes("space")) {
-        reply =
-          "Great choice! How about starting with: 'The stars twinkled brightly as Captain Alex prepared for the biggest adventure of their life...' You can continue from there!";
-      } else if (lowerText.includes("happy")) {
-        reply =
-          "Some synonyms for happy are: joyful, cheerful, delighted, or ecstatic!";
-      } else if (lowerText.includes("character")) {
-        reply =
-          "How about a brave squirrel who is afraid of heights? or a robot who loves to garden?";
-      } else if (lowerText.includes("end")) {
-        reply =
-          "Maybe it ends with a surprise party, or waking up from a dream, or finding a hidden treasure!";
-      }
-      const aiMsgId = messageIdRef.current++;
-      setMessages((prev) => [
-        ...prev,
-        { id: aiMsgId, text: reply, sender: "ai" },
-      ]);
-      setTimeout(scrollToBottom, 100);
-    }, 1000);
+    try {
+      const response = await owlbertChat({
+        message: text,
+        context: content || "Writing a story",
+      }).unwrap();
+
+      const aiMsg = {
+        id: messageIdRef.current++,
+        text:
+          response.reply ||
+          "I'm not sure how to help with that, but keep writing!",
+        sender: "ai",
+      };
+
+      setMessages((prev) => [...prev, aiMsg]);
+      setTimeout(scrollToBottom, 50);
+    } catch (error) {
+      console.error("Chat error:", error);
+      const errorMsg = {
+        id: messageIdRef.current++,
+        text: "Oops! I'm having a little trouble connecting. Please try again in a bit! 🦉",
+        sender: "ai",
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    }
   };
 
   const getWordCount = (text) => {
@@ -144,6 +154,10 @@ export default function StoryCreatorStudio() {
   };
 
   const handlePublish = () => {
+    if (!title.trim() || !content.trim()) {
+      toast.error("Please provide both a title and content for your story!");
+      return;
+    }
     setShowShareToast(true);
   };
 
@@ -154,17 +168,41 @@ export default function StoryCreatorStudio() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const handleSave = () => {
-    const newStory = {
-      id: Date.now(),
-      title: title || "Untitled Story",
-      timestamp: Date.now(),
-    };
-    setSavedStories((prev) => [newStory, ...prev]);
+  const handleSave = async () => {
+    if (!title.trim() || !content.trim()) {
+      toast.error("Please provide both a title and content for your story!");
+      return;
+    }
+
+    try {
+      const response = await createStory({
+        title: title,
+        content: content,
+      }).unwrap();
+
+      toast.success("Story saved successfully! ✨");
+
+      // Prepend the new story to the list
+      const newStory = {
+        id: response.id || Date.now(),
+        title: response.title,
+        timestamp: Date.now(),
+      };
+
+      setSavedStories((prev) => [newStory, ...prev]);
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error(
+        error?.data?.message || "Failed to save story. Please try again.",
+      );
+    }
   };
 
   const getTimeAgo = (timestamp) => {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    const now = Date.now();
+    const seconds = Math.floor((now - timestamp) / 1000);
     if (seconds < 60) return `${seconds} seconds ago`;
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes} minutes ago`;
@@ -205,10 +243,13 @@ export default function StoryCreatorStudio() {
                 "linear-gradient(90.49deg, #FFB6C1 0.57%, #FFDAB9 99.28%)",
             }}
             onClick={handleSave}
-            className="px-4 py-2 md:px-7 bg-gradient-to-br from-[#FFE87C] to-[#FFDAB9] rounded-full shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] transition-all hover:shadow-md hover:brightness-105 flex items-center gap-2 text-gray-800 text-xs md:text-sm font-bold"
+            disabled={isSaving}
+            className={`px-4 py-2 md:px-7 bg-gradient-to-br from-[#FFE87C] to-[#FFDAB9] rounded-full shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] transition-all hover:shadow-md hover:brightness-105 flex items-center gap-2 text-gray-800 text-xs md:text-sm font-bold ${
+              isSaving ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
             <Save size={16} color="#2D3748" />
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </button>
           <button
             style={{
@@ -293,7 +334,9 @@ export default function StoryCreatorStudio() {
                   autoplay={true}
                   style={{ width: 150, height: 120 }}
                 />
-                <p className="text-white text-base font-bold headerFont">Hi! I'm Owlbert!</p>
+                <p className="text-white text-base font-bold headerFont">
+                  Hi! I'm Owlbert!
+                </p>
                 <p className="text-white text-base font-normal normalFont">
                   Your friendly writing assistant
                 </p>
@@ -312,7 +355,9 @@ export default function StoryCreatorStudio() {
 
           <div className="flex items-center gap-2">
             <Sparkles size={20} color="#7C3AED" />
-            <p className="text-gray-700 text-sm font-normal headerFont">Story Helper</p>
+            <p className="text-gray-700 text-sm font-normal headerFont">
+              Story Helper
+            </p>
           </div>
           {/* Chatbox */}
           <div className="w-full h-[340px] normalFont bg-white rounded-[20px] shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] outline outline-2 outline-offset-[-2px] outline-black/10 flex flex-col overflow-hidden">
@@ -354,6 +399,17 @@ export default function StoryCreatorStudio() {
                   </div>
                 </div>
               )}
+              {isChatting && (
+                <div className="flex justify-start">
+                  <div className="bg-slate-200 text-gray-700 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+                    <div className="flex gap-1 items-center h-4">
+                      <span className="w-1 h-1 bg-gray-500 rounded-full animate-bounce"></span>
+                      <span className="w-1 h-1 bg-gray-500 rounded-full animate-bounce delay-100"></span>
+                      <span className="w-1 h-1 bg-gray-500 rounded-full animate-bounce delay-200"></span>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 
@@ -386,7 +442,9 @@ export default function StoryCreatorStudio() {
         <div className="p-7 bg-white rounded-3xl shadow-[0px_8px_10px_-6px_rgba(0,0,0,0.10)] outline outline-4 outline-offset-[-4px] outline-amber-200/30 inline-flex flex-col justify-start items-start gap-4">
           <div className="flex items-center gap-2">
             <Lightbulb color="#FFD700" />
-            <h1 className="text-gray-800 text-base font-bold headerFont">Upload image</h1>
+            <h1 className="text-gray-800 text-base font-bold headerFont">
+              Upload image
+            </h1>
           </div>
           <div
             className="w-full normalFont p-4 bg-gradient-to-b from-[#FFF8E6] to-[#FFF0F5] rounded-2xl inline-flex flex-col justify-start items-center cursor-pointer hover:brightness-95 transition"
@@ -419,7 +477,9 @@ export default function StoryCreatorStudio() {
         {/* Card 2 */}
         <div className="p-7 bg-white rounded-3xl shadow-[0px_8px_10px_-6px_rgba(0,0,0,0.10)] outline outline-4 outline-offset-[-4px] outline-emerald-200/30  inline-flex flex-col justify-start items-start gap-4">
           <div className="flex items-center gap-2">
-            <h1 className="text-gray-800 text-base font-bold headerFont">Quick Tips 📝</h1>
+            <h1 className="text-gray-800 text-base font-bold headerFont">
+              Quick Tips 📝
+            </h1>
           </div>
           <div className="flex flex-col items-start justify-center gap-3 normalFont">
             <div className="flex items-center gap-2">
@@ -466,7 +526,7 @@ export default function StoryCreatorStudio() {
               <a href="/myStories">View All</a>
             </p>
           </div>
-          {savedStories.slice(0, 2).map((story) => (
+          {savedStories.map((story) => (
             <div
               key={story.id}
               className="w-full p-3 bg-[#4A5565]/5 rounded-2xl inline-flex flex-col justify-start items-start"
@@ -475,7 +535,8 @@ export default function StoryCreatorStudio() {
                 {story.title}
               </p>
               <p className="self-stretch justify-start normalFont text-[#4A5565] text-xs font-normal leading-4">
-                Last edited {getTimeAgo(story.timestamp)}
+                Last edited{" "}
+                {story.timestamp ? getTimeAgo(story.timestamp) : "Just now"}
               </p>
             </div>
           ))}

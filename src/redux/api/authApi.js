@@ -319,6 +319,37 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Dashboard Stats"],
     }),
+    // === Writing & AI ===
+    createStory: builder.mutation({
+      query: (data) => ({
+        url: "/stories/editor/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Stories Library", "Dashboard Stats"],
+    }),
+    updateStory: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/stories/editor/${id}/`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Stories Library", "Dashboard Stats"],
+    }),
+    owlbertChat: builder.mutation({
+      query: (data) => ({
+        url: "/stories/chat/owlbert/",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    realtimeCheck: builder.mutation({
+      query: (data) => ({
+        url: "/stories/ai/realtime-check/",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 export const {
@@ -360,4 +391,8 @@ export const {
   useUpdateStudentProfileMutation,
   useGetContinueReadingQuery,
   useGetDashboardStatsQuery,
+  useCreateStoryMutation,
+  useUpdateStoryMutation,
+  useOwlbertChatMutation,
+  useRealtimeCheckMutation,
 } = authApi;
