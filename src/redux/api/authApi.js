@@ -278,6 +278,14 @@ export const authApi = api.injectEndpoints({
       }),
       providesTags: ["Stories Library"],
     }),
+    // === Read Story Single ===
+    getReadStorySingle: builder.query({
+      query: (id) => ({
+        url: `/stories/read/${id}/`,
+        method: "GET",
+      }),
+      providesTags: ["Read Story Single"],
+    }),
     // === Student Profile ===
     getStudentProfile: builder.query({
       query: () => ({
@@ -331,6 +339,7 @@ export const {
   useGetTermsAndConditionsQuery,
   useGetPrivacyPolicyQuery,
   useGetStoriesLibraryQuery,
+  useGetReadStorySingleQuery,
   useGetStudentProfileQuery,
   useUpdateStudentProfileMutation,
 } = authApi;

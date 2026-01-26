@@ -277,9 +277,10 @@ const FilterPill = ({ label, options, selected, onSelect }) => {
   );
 };
 
-const StoryCard = ({ title, author, grade, pages, rating, image }) => (
+const StoryCard = ({ id, title, author, grade, pages, rating, image }) => (
   <Link
-    to="/23"
+    to={`/${id}`}
+    state={{ title }}
     className="bg-white rounded-2xl shadow p-4 space-y-3 hover:shadow-lg transition"
   >
     <img
