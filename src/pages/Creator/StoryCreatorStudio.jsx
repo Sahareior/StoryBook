@@ -22,6 +22,7 @@ import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 import {
   useCreateStoryMutation,
   useOwlbertChatMutation,
+  useRealtimeCheckMutation,
 } from "../../redux/api/authApi";
 import { toast } from "react-hot-toast";
 
@@ -77,6 +78,7 @@ export default function StoryCreatorStudio() {
 
   const [createStory, { isLoading: isSaving }] = useCreateStoryMutation();
   const [owlbertChat, { isLoading: isChatting }] = useOwlbertChatMutation();
+  const [realtimeCheck, { isLoading: isChecking }] = useRealtimeCheckMutation();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showShareToast, setShowShareToast] = useState(false);
@@ -132,6 +134,58 @@ export default function StoryCreatorStudio() {
 
   const getWordCount = (text) => {
     return text.split(/\s+/).filter((word) => word.length > 0).length;
+  };
+
+  const handleRealtimeCheck = async (text, setter) => {
+    // Detect punctuation at the end of the input (ignoring trailing spaces)
+    const punctuationRegex = /[.!?]\s*$/;
+    if (!punctuationRegex.test(text)) return;
+
+    // Extract the last sentence to check
+    // We split by punctuation but keep it, then trim
+    const sentences = text.split(/(?<=[.!?])\s*/);
+    const lastSentence =
+      sentences[sentences.length - 1] || sentences[sentences.length - 2];
+
+    if (!lastSentence || lastSentence.length < 5) return;
+
+    try {
+      const response = await realtimeCheck({ text: lastSentence }).unwrap();
+
+      if (response.corrections && response.corrections.length > 0) {
+        let fixedSentence = lastSentence;
+
+        response.corrections.forEach((corr) => {
+          // Replace original with suggestion (case insensitive for simpler matching)
+          const regex = new RegExp(`\\b${corr.original}\\b`, "gi");
+          fixedSentence = fixedSentence.replace(regex, corr.suggestion);
+        });
+
+        if (fixedSentence !== lastSentence) {
+          // Update the full text state with the fixed sentence
+          const updatedText = text.replace(lastSentence, fixedSentence);
+          setter(updatedText);
+          toast.success("Owlbert polished your sentence! ✨", {
+            icon: "🦉",
+            duration: 2000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Realtime check error:", error);
+    }
+  };
+
+  const handleTitleChange = (e) => {
+    const val = e.target.value;
+    setTitle(val);
+    handleRealtimeCheck(val, setTitle);
+  };
+
+  const handleContentChange = (e) => {
+    const val = e.target.value;
+    setContent(val);
+    handleRealtimeCheck(val, setContent);
   };
 
   const handleClear = () => {
@@ -273,16 +327,21 @@ export default function StoryCreatorStudio() {
             <input
               placeholder="Give your story a title…"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleTitleChange}
               className="w-full headerFont border-b pb-2 focus:outline-none text-neutral-950/50 text-base md:text-xl font-bold"
             />
           </div>
 
-          <div className="p-4 md:p-6 pt-0">
+          <div className="p-4 md:p-6 pt-0 relative">
+            {isChecking && (
+              <div className="absolute top-0 right-6 flex items-center gap-2 text-xs text-teal-600 font-bold animate-pulse">
+                <Sparkles size={12} /> Owlbert is checking...
+              </div>
+            )}
             <textarea
               placeholder="Once upon a time…"
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={handleContentChange}
               className="min-h-[300px] normalFont md:min-h-[420px] w-full resize-none text-gray-700 text-base md:text-lg font-normal focus:outline-none bg-transparent"
               style={{
                 backgroundImage:

@@ -320,6 +320,7 @@ export const authApi = api.injectEndpoints({
       providesTags: ["Dashboard Stats"],
     }),
     // === Writing & AI ===
+    // === Create Story ===
     createStory: builder.mutation({
       query: (data) => ({
         url: "/stories/editor/",
@@ -328,6 +329,7 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Stories Library", "Dashboard Stats"],
     }),
+    // === Update Story ===
     updateStory: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/stories/editor/${id}/`,
@@ -336,6 +338,7 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Stories Library", "Dashboard Stats"],
     }),
+    // === Owlbert Chat ===
     owlbertChat: builder.mutation({
       query: (data) => ({
         url: "/stories/chat/owlbert/",
@@ -343,6 +346,7 @@ export const authApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    // === Realtime Check ===
     realtimeCheck: builder.mutation({
       query: (data) => ({
         url: "/stories/ai/realtime-check/",
