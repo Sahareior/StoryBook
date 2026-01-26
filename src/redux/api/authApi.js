@@ -280,8 +280,8 @@ export const authApi = api.injectEndpoints({
     }),
     // === Read Story Single ===
     getReadStorySingle: builder.query({
-      query: (id) => ({
-        url: `/stories/read/${id}/`,
+      query: ({ id, page }) => ({
+        url: `/stories/read/${id}/${page ? `?page=${page}` : ""}`,
         method: "GET",
       }),
       providesTags: ["Read Story Single"],

@@ -12,23 +12,26 @@ const ViewBook = () => {
   const { "read-book": storyId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    data: storyData,
-    isLoading: isFetching,
-    isError,
-  } = useGetReadStorySingleQuery(storyId);
 
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
   const [selectedWord, setSelectedWord] = useState("");
   const [wordDefinition, setWordDefinition] = useState(null);
   const [isDictionaryLoading, setIsDictionaryLoading] = useState(false);
 
-  // Use title from state if available, otherwise fallback
-  const storyTitle = location.state?.title || "Story Reader";
+  const {
+    data: storyData,
+    isLoading: isFetching,
+    isError,
+  } = useGetReadStorySingleQuery({ id: storyId, page: pageNumber });
 
-  const pages = storyData?.content_pages || [];
-  const totalPages = pages.length;
-  const currentContent = pages[currentPageIndex] || "";
+  console.log("Story Data:", storyData);
+
+  // Use title from API if available, else state, else fallback
+  const storyTitle =
+    storyData?.title || location.state?.title || "Story Reader";
+
+  const totalPages = storyData?.total_pages || 0;
+  const currentContent = storyData?.page_content || "";
 
   // Handle word selection
   const handleWordClick = async (word) => {
@@ -117,16 +120,16 @@ const ViewBook = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPageIndex < totalPages - 1) {
-      setCurrentPageIndex(currentPageIndex + 1);
+    if (pageNumber < totalPages) {
+      setPageNumber(pageNumber + 1);
       setSelectedWord("");
       setWordDefinition(null);
     }
   };
 
   const handlePrevPage = () => {
-    if (currentPageIndex > 0) {
-      setCurrentPageIndex(currentPageIndex - 1);
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
       setSelectedWord("");
       setWordDefinition(null);
     }
@@ -192,7 +195,7 @@ const ViewBook = () => {
           <div className="flex-1 flex flex-col">
             <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-12 leading-relaxed text-gray-800 flex-1 lg:overflow-y-auto border-4 border-white">
               <div className="space-y-6">
-                <p className="text-lg md:text-2xl normalFont whitespace-pre-wrap leading-loose">
+                <p className="text-lg normalFont whitespace-pre-wrap leading-loose">
                   {renderContent(currentContent)}
                 </p>
               </div>
@@ -201,23 +204,23 @@ const ViewBook = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between mt-8 gap-4 sm:gap-0 headerFont">
               <button
                 onClick={handlePrevPage}
-                disabled={currentPageIndex === 0}
+                disabled={pageNumber === 1}
                 className={`w-full sm:w-auto px-8 py-3 rounded-full bg-gradient-to-r from-pink-300 to-rose-300 text-white shadow-lg hover:opacity-90 transition transform active:scale-95 ${
-                  currentPageIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
+                  pageNumber === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
                 ← Previous Page
               </button>
 
               <span className="text-sm md:text-base font-bold text-gray-500 order-first sm:order-none bg-white px-6 py-2 rounded-full shadow-inner border border-gray-100">
-                Page {currentPageIndex + 1} of {totalPages}
+                Page {pageNumber} of {totalPages}
               </span>
 
               <button
                 onClick={handleNextPage}
-                disabled={currentPageIndex === totalPages - 1}
+                disabled={pageNumber === totalPages}
                 className={`w-full sm:w-auto px-8 py-3 rounded-full text-white shadow-lg hover:opacity-90 transition transform active:scale-95 ${
-                  currentPageIndex === totalPages - 1
+                  pageNumber === totalPages
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
