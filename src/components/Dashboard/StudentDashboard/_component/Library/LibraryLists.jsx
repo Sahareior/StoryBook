@@ -55,6 +55,7 @@ const LibraryLists = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 12;
 
+  const allStoryRef = useRef(null);
   const {
     data: libraryStories,
     isLoading,
@@ -93,7 +94,7 @@ const LibraryLists = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    allStoryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -150,37 +151,39 @@ const LibraryLists = () => {
         </Section>
 
         {/* All Story */}
-        <Section title="All Story">
-          {isLoading ? (
-            <div className="col-span-full py-10 text-center text-gray-500 font-medium font-['Nunito']">
-              Loading stories...
-            </div>
-          ) : isError ? (
-            <div className="col-span-full py-10 text-center text-red-500 font-medium font-['Nunito']">
-              Failed to load stories.
-            </div>
-          ) : currentStories.length > 0 ? (
-            currentStories.map((story) => (
-              <StoryCard
-                key={story.story_id}
-                id={story.story_id}
-                title={story.story_title}
-                author={story.author_name}
-                grade={`Grade ${story.grade}`}
-                pages={story.total_pages}
-                rating={parseFloat(story.rating)}
-                image={
-                  story.cover_image ||
-                  "https://ih1.redbubble.net/image.1119561633.3087/flat,750x,075,f-pad,750x1000,f8f8f8.jpg"
-                }
-              />
-            ))
-          ) : (
-            <div className="col-span-full py-10 text-center text-gray-500 font-medium font-['Nunito']">
-              No stories found for this grade.
-            </div>
-          )}
-        </Section>
+        <div ref={allStoryRef} className="scroll-mt-20">
+          <Section title="All Story">
+            {isLoading ? (
+              <div className="col-span-full py-10 text-center text-gray-500 font-medium font-['Nunito']">
+                Loading stories...
+              </div>
+            ) : isError ? (
+              <div className="col-span-full py-10 text-center text-red-500 font-medium font-['Nunito']">
+                Failed to load stories.
+              </div>
+            ) : currentStories.length > 0 ? (
+              currentStories.map((story) => (
+                <StoryCard
+                  key={story.story_id}
+                  id={story.story_id}
+                  title={story.story_title}
+                  author={story.author_name}
+                  grade={`Grade ${story.grade}`}
+                  pages={story.total_pages}
+                  rating={parseFloat(story.rating)}
+                  image={
+                    story.cover_image ||
+                    "https://ih1.redbubble.net/image.1119561633.3087/flat,750x,075,f-pad,750x1000,f8f8f8.jpg"
+                  }
+                />
+              ))
+            ) : (
+              <div className="col-span-full py-10 text-center text-gray-500 font-medium font-['Nunito']">
+                No stories found for this grade.
+              </div>
+            )}
+          </Section>
+        </div>
 
         {/* Pagination for All Story */}
         {!isLoading && !isError && filteredLibrary?.length > itemsPerPage && (
